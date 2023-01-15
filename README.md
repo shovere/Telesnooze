@@ -8,7 +8,7 @@ and preferences.
 #### Core Features: 
   Frontend: 
   Login page
-  User Dashboard
+  User Dashboard: 
     - wakeup time/date selections, timezone selection
     - success rate/number of attempts to wakeup
     - snooze/call N times UI 
