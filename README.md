@@ -1,4 +1,4 @@
-# Telesnooze
+# Telesnooze by Group 34
 
 ### Description:
 Telesnooze is a web app that will act as a wake up call service. The user can set dates/times to receive a call, 
