@@ -29,10 +29,10 @@ and preferences.
   - Random multiple choice questions, integrated with https://quizapi.io/
 
 
-### Frontend: 
+### Frontend Developers: 
 - Jesse Maki 
 - Andy Perez
 
-#### Backend: 
+### Backend Developers: 
 - Ethan Shover
 - Sean Hernandez
