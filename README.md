@@ -5,7 +5,7 @@ Telesnooze is a web app that will act as a wake up call service. The user can se
 set snooze paramaters, and set custom questions/codes. Each user will have a profile that keeps track of their data
 and preferences. 
 
-#### Core: 
+#### Core Features: 
   Frontend: 
   Login page
   User Dashboard
