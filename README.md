@@ -1,11 +1,11 @@
 # Telesnooze
 
-Description:
+#### Description:
 Telesnooze is a web app that will act as a wake up call service. The user can set dates/times to receive a call, 
 set snooze paramaters, and set custom questions/codes. Each user will have a profile that keeps track of their data
 and preferences. 
 
-Core: 
+#### Core: 
   Frontend: 
   Login page
   User Dashboard
@@ -20,17 +20,17 @@ Core:
     - Twilio / Telnyx integration for VOIP calling and DTMF handling, 
       which will track successful wakeups/ number of attempts
  
-Auxilary features if time permits: 
+#### Auxilary features if time permits: 
   - User defined questions 
   - Upload MP3 to play during wakeup
   - More advanced statistics regarding attemped wakeups/graphing
   - Random multiple choice questions, integrated with https://quizapi.io/
 
 
-Frontend: 
+#### Frontend: 
 - Jesse Maki 
 - Andy Perez
 
-Backend: 
+#### Backend: 
 - Ethan Shover
 - Sean Hernandez
