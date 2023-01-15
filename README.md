@@ -9,10 +9,10 @@ and preferences.
   Frontend: 
   Login page
   User Dashboard: 
-    - wakeup time/date selections, timezone selection
-    - success rate/number of attempts to wakeup
-    - snooze/call N times UI 
-    - user profile
+    * wakeup time/date selections, timezone selection
+    * success rate/number of attempts to wakeup
+    * snooze/call N times UI 
+    * user profile
   
   Backend: 
     - Authentication and session tokens
