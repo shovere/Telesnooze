@@ -19,7 +19,7 @@ func setupDB() *sql.DB {
 }
 
 func sayHello(writer http.ResponseWriter, request *http.Request){
-	fmt.Print("hello new user")
+	fmt.Println("hello new user")
 	writer.Header().Set("Content-Type", "application/json")
 }
 
