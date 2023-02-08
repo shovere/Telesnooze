@@ -1,3 +1,5 @@
+
+<!--
 <section class="alarmdaysactive" [formGroup]="activealarm">
   <h4>Select when you would like your alarm to be active:</h4>
   <p><mat-checkbox formControlName="sunday">Sunday</mat-checkbox></p>
@@ -9,14 +11,14 @@
   <p><mat-checkbox formControlName="saturday">Saturday</mat-checkbox></p>
 </section>
 
-<!--
+
 <section class="alarmdaysactive" [formGroup]="activealarm">
   <h4>Chosen</h4>
   {{activealarm.value | json}}
 </section>
 <br>
 <br>
--->
+
 
 <div class="container">
   <input [ngxTimepicker]="picker">
@@ -26,5 +28,6 @@
   <div class="alarm-set-button">
     <button mat-raised-button color="primary">Set</button>
   </div>
+-->
 
-
+<app-alarm></app-alarm>
