@@ -26,6 +26,9 @@
   bottom: 15%;
   color: #6F4B91;
 }
-date-picker{
-  margin-right: 12px;
+.alarm {
+  top: 5%;
+  position: relative;
+  
+
 }
