@@ -1,7 +1,8 @@
-.header {
+.title_header {
   padding: 60px;
   text-align: center;
-  background: #301934;
+  background: #6F4B91;
   color: white;
-  font-size: 60px;
+  font-size: 40px;
+  border-bottom: 5px solid white;
 }
