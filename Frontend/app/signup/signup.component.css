@@ -1,0 +1,50 @@
+.signup-form {
+  width: 300px;
+  height: 450px;
+  padding: 32px;
+  background-color: white;
+  box-shadow: 4px 4px 4px 4px rgba(0, 0, 0, 0.1);
+  justify-content: center;
+  align-items: center;
+  align-self: center;
+  position: absolute;
+  left: 40%;
+  top: 25%;
+}
+
+.signup-title {
+  position: relative;
+  left: 30%;
+  font-size: 40px;
+}
+.user-prompt {
+  width: 100%;
+}
+.password-prompt {
+  width: 100%;
+}
+.password-confirm-prompt {
+  width: 100%;
+}
+.email-prompt {
+  width: 100%;
+}
+
+
+
+
+.login_return {
+  position: relative;
+  top: 5%;
+}
+.login_return a {
+  text-decoration: none;
+  color: grey;
+ }
+.login_return a:hover {
+  text-decoration: underline;
+}
+
+.login_return a:active {
+  text-decoration: underline;
+}
