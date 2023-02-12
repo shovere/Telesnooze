@@ -23,6 +23,12 @@
       <input matInput placeholder="Confirm Password" value="" name="passwordconfirm" type="password" [(ngModel)]="password">
     </mat-form-field>
 
+    <mat-form-field class="phone-prompt" appearance="fill">
+      <mat-label>Phone Number</mat-label>
+      <mat-icon matSuffix>phone</mat-icon>
+      <input matInput placeholder="Phone Number" value="" name="phone" type="phone" [(ngModel)]="phone">
+    </mat-form-field>
+
     <button class="signup-button" mat-raised-button color="primary" (click)="submit()">Submit</button>
     <span class="success-message" *ngIf="show"> <button mat-button color="primary">Sign in successful</button></span>
     <span class="fail-message" *ngif="show"> <button mat-button color="red">Username or Password are incorrect</button></span>
