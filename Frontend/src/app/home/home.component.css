@@ -1,0 +1,34 @@
+.mat-tab-group {
+  margin-bottom: 48px;
+}
+.home-header {
+  align-self: center;
+  align-items: center;
+  display: flex;
+  text-align: center;
+  background-color: #6F4B91;
+  font-size: 20px;
+  padding:30px;
+  color:white;
+}
+.percentage-correct {
+
+  margin-top: 3%;
+  margin-left: 10px;
+  position: relative;
+  display: flex;
+  width: 30%;
+}
+.percentage-text {
+  position: relative;
+  font-size: 40px;
+  margin-left: 33%;
+  bottom: 15%;
+  color: #6F4B91;
+}
+.alarm {
+  top: 5%;
+  position: relative;
+  
+
+}
