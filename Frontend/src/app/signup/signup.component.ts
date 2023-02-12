@@ -8,6 +8,7 @@ import { Component } from '@angular/core';
   templateUrl: './signup.component.html',
 })
 export class SignupComponent {
+  phone : string = "";
   email: string = "";
   username: string = "";
   password: string = "";
@@ -21,6 +22,7 @@ export class SignupComponent {
     this.username = "";
     this.password = "";
     this.passwordconfirm = "";
+    this.phone = "";
     this.show = true;
   }
 }
