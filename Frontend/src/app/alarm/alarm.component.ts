@@ -1,14 +1,17 @@
 import {Component, OnInit} from '@angular/core';
 import {FormBuilder} from '@angular/forms';
 import {HttpClient} from "@angular/common/http";
-
+import {FormGroup, FormControl} from '@angular/forms';
 
 @Component({
   selector: 'app-alarm',
   templateUrl: './alarm.component.html',
   styleUrls: ['./alarm.component.css']
 })
+
 export class AlarmComponent {
+  time = '6:00 am'; // this shows up as default time.
+
     activealarm = this._formBuilder.group({
       sunday : false,
       monday : false,
@@ -21,6 +24,3 @@ export class AlarmComponent {
   
     constructor(private _formBuilder: FormBuilder) {}
   }
-
-
-
