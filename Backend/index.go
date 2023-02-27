@@ -7,10 +7,12 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"reflect"
 
 	"github.com/google/uuid"
 	"github.com/gorilla/mux"
 	_ "github.com/mattn/go-sqlite3"
+	"github.com/relvacode/iso8601"
 	"github.com/rs/cors"
 )
 
@@ -89,15 +91,17 @@ func (a *App) initializeApp() {
 
 func sayHello(writer http.ResponseWriter, request *http.Request){
 	fmt.Println("hello new user")
-	writer.Header().Set("Content-Type", "application/json")
+	writer.Header().Set("hello", "there")
 }
 
 //this a *App  means it applies to the app struct type
-func (a *App) setAlarmHandler(writer http.ResponseWriter, request *http.Request){
-	fmt.Println(request)
+func (a *App) setAlarm(writer http.ResponseWriter, request *http.Request){
+
+	//TODO 
+	//check and make sure alarm.time is in ISO format
+	//check that there is at least one true value for days of the week
 	var alarm alarm
 	decoder := json.NewDecoder(request.Body);
-	fmt.Println(decoder)
 	
 	errDecode := decoder.Decode(&alarm);
 	fmt.Printf("%v: %v\n", alarm.Time, alarm.Week)
@@ -107,14 +111,33 @@ func (a *App) setAlarmHandler(writer http.ResponseWriter, request *http.Request)
         return
     }
 	id := uuid.New();
+	_,tmErr := iso8601.ParseString(alarm.Time);
+	v := reflect.ValueOf(alarm.Week)
+	hasDaysOfWeek := false;
+
+	for i := 0; i< v.NumField(); i++ {
+		if(v.Field(i).Interface() == true){
+			hasDaysOfWeek = true
+		}
+    }
 	
-	_, err := a.DB.Exec(
-		`INSERT INTO alarms(id, time, sunday, monday, tuesday, wednesday, thursday,friday,saturday) 
-		 VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING id`,
-		 id, alarm.Time, alarm.Week.Sunday, alarm.Week.Monday, alarm.Week.Tuesday, alarm.Week.Wednesday, alarm.Week.Thursday, alarm.Week.Friday, alarm.Week.Saturday); 
-	if(err != nil){
-		fmt.Println("failure: ", err);
-	} 
+	if(tmErr != nil){
+   		writer.Write([]byte("Timestamp is not in ISO format"))
+	} else if(!hasDaysOfWeek){
+   		writer.Write([]byte("Problem: Week needs at least one true value OR JSON be malformed"))
+
+	}else  {
+		_, err := a.DB.Exec(
+			`INSERT INTO alarms(id, time, sunday, monday, tuesday, wednesday, thursday,friday,saturday) 
+			 VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING id`,
+			 id, alarm.Time, alarm.Week.Sunday, alarm.Week.Monday, alarm.Week.Tuesday, alarm.Week.Wednesday, alarm.Week.Thursday, alarm.Week.Friday, alarm.Week.Saturday); 
+		if(err != nil){
+			fmt.Println("failure: ", err);
+			writer.Write([]byte("Something went wrong in DB process"))
+		} else {
+			writer.Write([]byte("Success"))
+		}
+	}
 
 	defer request.Body.Close()
 }
@@ -123,7 +146,7 @@ func main(){
 	app := &App{}
 	app.initializeApp()
 	app.router.HandleFunc("/api/v1/", sayHello).Methods("GET");
-	app.router.HandleFunc("/api/v1/setAlarm", app.setAlarmHandler).Methods("POST")
+	app.router.HandleFunc("/api/v1/setAlarm", app.setAlarm).Methods("POST")
 	app.router.HandleFunc("/api/v1/createUser", app.createUser).Methods("POST")
 	c := cors.New(cors.Options{
         AllowedOrigins: []string{"*"},
