@@ -9,23 +9,22 @@
     <p><mat-checkbox formControlName="friday">Friday</mat-checkbox></p>
     <p><mat-checkbox formControlName="saturday">Saturday</mat-checkbox></p>
   </section>
-  
-  <!--
-  <section class="alarmdaysactive" [formGroup]="activealarm">
-    <h4>Chosen</h4>
-    {{activealarm.value | json}}
-  </section>
-  <br>
-  <br>
-  -->
-  
-  <div class="container">
-    <input [ngxTimepicker]="picker">
-    <ngx-material-timepicker #picker></ngx-material-timepicker>
-  </div>
-  
-    <div class="alarm-set-button">
-      <button mat-raised-button color="primary">Set</button>
-    </div>
-  
-  
+
+<mat-form-field>
+   <mat-label>Time</mat-label>
+  <input
+    matInput
+    aria-label="default time"
+    [ngxTimepicker]="defaultValue"
+    [value]="'0:00 am'"
+    [(ngModel)]="time"
+  />
+  <ngx-material-timepicker #defaultValue>
+  </ngx-material-timepicker>
+</mat-form-field>
+
+
+
+
+
+
