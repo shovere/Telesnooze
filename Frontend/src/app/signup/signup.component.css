@@ -1,6 +1,6 @@
 .signup-form {
   width: 300px;
-  height: 450px;
+  height: 500px;
   padding: 32px;
   background-color: white;
   box-shadow: 4px 4px 4px 4px rgba(0, 0, 0, 0.1);
@@ -28,6 +28,9 @@
 }
 .email-prompt {
   width: 100%;
+}
+.phone-prompt{
+  width:100%;
 }
 
 
