@@ -38,4 +38,5 @@ and preferences.
 - Sean Hernandez
 
 
-# Documentation
+## Documentation
+
