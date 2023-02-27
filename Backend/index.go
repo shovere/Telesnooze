@@ -1,9 +1,9 @@
 package main
 
 import (
+	"crypto/sha256"
 	"database/sql"
 	"encoding/json"
-	"crypto/sha256"
 	"fmt"
 	"log"
 	"net/http"
@@ -11,6 +11,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/gorilla/mux"
 	_ "github.com/mattn/go-sqlite3"
+	"github.com/rs/cors"
 )
 
 
@@ -63,7 +64,6 @@ func (a *App) createUser(writer http.ResponseWriter, request *http.Request) {
 	}
 
 	defer request.Body.Close()
-
 }
 
 func respondWithError(w http.ResponseWriter, code int, message string) {
@@ -93,11 +93,12 @@ func sayHello(writer http.ResponseWriter, request *http.Request){
 }
 
 //this a *App  means it applies to the app struct type
-func (a *App) setAlarm(writer http.ResponseWriter, request *http.Request){
+func (a *App) setAlarmHandler(writer http.ResponseWriter, request *http.Request){
+	fmt.Println(request)
 	var alarm alarm
 	decoder := json.NewDecoder(request.Body);
 	fmt.Println(decoder)
-	id := uuid.New()
+	
 	errDecode := decoder.Decode(&alarm);
 	fmt.Printf("%v: %v\n", alarm.Time, alarm.Week)
 	if (errDecode != nil) {
@@ -105,13 +106,15 @@ func (a *App) setAlarm(writer http.ResponseWriter, request *http.Request){
         respondWithError(writer, http.StatusBadRequest, "Invalid request payload")
         return
     }
+	id := uuid.New();
+	
 	_, err := a.DB.Exec(
-       `INSERT INTO alarms(id, time, sunday, monday, tuesday, wednesday, thursday,friday,saturday) 
-		VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING id`,
-        id, alarm.Time, alarm.Week.Sunday, alarm.Week.Monday, alarm.Week.Tuesday, alarm.Week.Wednesday, alarm.Week.Thursday, alarm.Week.Friday, alarm.Week.Saturday)
-	if(err != nil ){
-		fmt.Println(err)
-	}
+		`INSERT INTO alarms(id, time, sunday, monday, tuesday, wednesday, thursday,friday,saturday) 
+		 VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING id`,
+		 id, alarm.Time, alarm.Week.Sunday, alarm.Week.Monday, alarm.Week.Tuesday, alarm.Week.Wednesday, alarm.Week.Thursday, alarm.Week.Friday, alarm.Week.Saturday); 
+	if(err != nil){
+		fmt.Println("failure: ", err);
+	} 
 
 	defer request.Body.Close()
 }
@@ -120,8 +123,13 @@ func main(){
 	app := &App{}
 	app.initializeApp()
 	app.router.HandleFunc("/api/v1/", sayHello).Methods("GET");
-	app.router.HandleFunc("/api/v1/setAlarm", app.setAlarm).Methods("POST")
+	app.router.HandleFunc("/api/v1/setAlarm", app.setAlarmHandler).Methods("POST")
 	app.router.HandleFunc("/api/v1/createUser", app.createUser).Methods("POST")
+	c := cors.New(cors.Options{
+        AllowedOrigins: []string{"*"},
+        AllowCredentials: true,
+    })
+	handler := c.Handler(app.router)
 	fmt.Println("Server at 8123")
-    log.Fatal(http.ListenAndServe(":8123",app.router))
+    log.Fatal(http.ListenAndServe(":8123",handler))
 }
