@@ -98,7 +98,6 @@ func sayHello(writer http.ResponseWriter, request *http.Request){
 func (a *App) setAlarm(writer http.ResponseWriter, request *http.Request){
 
 	//TODO 
-	//check and make sure alarm.time is in ISO format
 	//check that there is at least one true value for days of the week
 	var alarm alarm
 	decoder := json.NewDecoder(request.Body);
