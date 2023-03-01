@@ -132,4 +132,3 @@ func TestSetAlarm(t *testing.T){
 		}
 	})
 }
-

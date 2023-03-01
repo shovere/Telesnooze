@@ -16,7 +16,6 @@ import (
 	"github.com/rs/cors"
 )
 
-
 type account struct {
 	Email string `json:"email"`
 	Username string `json:"username"`
