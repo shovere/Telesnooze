@@ -9,10 +9,7 @@ import (
 
 func TestCreateUser(t *testing.T) {
 	t.Run("All Empty Fields", func(t *testing.T) {
-		jsonBody := []byte(`{"email": "", 
-							 "username": "", 
-							 "password": "", 
-							 "phone": ""}`)
+		jsonBody := []byte(`{"email": "", "username": "", "password": "", "phone": ""}`)
 		bodyReader := bytes.NewReader(jsonBody)
 		app := &App{}
 		app.initializeApp()
@@ -26,10 +23,7 @@ func TestCreateUser(t *testing.T) {
 		}
 	})
 	t.Run("One Empty Field", func(t *testing.T) {
-		jsonBody := []byte(`{"email": "test", 
-							 "username": "for", 
-							 "password": "empty", 
-							 "phone": ""}`)
+		jsonBody := []byte(`{"email": "test", "username": "for", "password": "empty", "phone": ""}`)
 		bodyReader := bytes.NewReader(jsonBody)
 		app := &App{}
 		app.initializeApp()
@@ -43,10 +37,7 @@ func TestCreateUser(t *testing.T) {
 		}
 	})
 	t.Run("Invalid Password", func(t *testing.T) {
-		jsonBody := []byte(`{"email": "only", 
-							 "username": "ascii", 
-							 "password": "£", 
-							 "phone": "19999999999"}`)
+		jsonBody := []byte(`{"email": "only", "username": "ascii", "password": "£", "phone": "9999999999"}`)
 		bodyReader := bytes.NewReader(jsonBody)
 		app := &App{}
 		app.initializeApp()
@@ -55,6 +46,48 @@ func TestCreateUser(t *testing.T) {
 		app.createUser(response, request)
 		got := response.Body.String();
 		want := "Problem: Password must only contain ASCII characters"
+		if got != want {
+			t.Errorf("response body is wrong, got %q want %q", got, want)
+		}
+	})
+	t.Run("Invalid Phone Number - 10 digits", func(t *testing.T) {
+		jsonBody := []byte(`{"email": "Numbers", "username": "Only", "password": "Ten",  "phone": "99999999999"}`)
+		bodyReader := bytes.NewReader(jsonBody)
+		app := &App{}
+		app.initializeApp()
+		request, _ := http.NewRequest(http.MethodPost, "/api/v1/createUser", bodyReader)
+		response := httptest.NewRecorder()
+		app.createUser(response, request)
+		got := response.Body.String();
+		want := "Problem: Phone number is invalid - must be 10 digits and only contain numbers"
+		if got != want {
+			t.Errorf("response body is wrong, got %q want %q", got, want)
+		}
+	})
+	t.Run("Invalid Phone Number - Digits Only", func(t *testing.T) {
+		jsonBody := []byte(`{"email": "Numbers", "username": "Only", "password": "Ten",  "phone": "aaaaaaaaaa"}`)
+		bodyReader := bytes.NewReader(jsonBody)
+		app := &App{}
+		app.initializeApp()
+		request, _ := http.NewRequest(http.MethodPost, "/api/v1/createUser", bodyReader)
+		response := httptest.NewRecorder()
+		app.createUser(response, request)
+		got := response.Body.String();
+		want := "Problem: Phone number is invalid - must be 10 digits and only contain numbers"
+		if got != want {
+			t.Errorf("response body is wrong, got %q want %q", got, want)
+		}
+	})
+	t.Run("Optimal Account Creation", func(t *testing.T) {
+		jsonBody := []byte(`{"email": "sean.p.hernandez@gmail.com", "username": "Sean", "password": "Hernandez", "phone": "9999999999"}`)
+		bodyReader := bytes.NewReader(jsonBody)
+		app := &App{}
+		app.initializeApp()
+		request, _ := http.NewRequest(http.MethodPost, "/api/v1/createUser", bodyReader)
+		response := httptest.NewRecorder()
+		app.createUser(response, request)
+		got := response.Body.String();
+		want := "Success"
 		if got != want {
 			t.Errorf("response body is wrong, got %q want %q", got, want)
 		}
