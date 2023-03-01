@@ -16,7 +16,6 @@ import (
 	"github.com/rs/cors"
 )
 
-
 type account struct {
 	Email string `json:"email"`
 	Username string `json:"username"`
@@ -57,14 +56,37 @@ func (a *App) createUser(writer http.ResponseWriter, request *http.Request) {
         respondWithError(writer, http.StatusBadRequest, "Invalid request payload")
         return
     }
-	hashedPassword := hashPassword(account.Password)
-	_, err := a.DB.Exec("INSERT INTO users(id, email, username, password, phone) VALUES($1, $2, $3, $4, $5) RETURNING id",
-							id, account.Email, account.Username, hashedPassword, account.Phone)
 
-	if err != nil {
-		fmt.Println(err)
+	allFieldsFilled := true
+	containsNonAscii := false
+	v := reflect.ValueOf(account)
+	for i := 0; i< v.NumField(); i++ {
+		if(v.Field(i).Interface() == ""){
+			allFieldsFilled = false
+		}
+    }
+
+	for _, char := range account.Password {
+		if char > 127 {
+			containsNonAscii = true
+		}
 	}
 
+	if(!allFieldsFilled) {
+		writer.Write([]byte("Problem: All fields must be filled"))
+	} else if(containsNonAscii) {
+		writer.Write([]byte("Problem: Password must only contain ASCII characters"))
+	} else {
+		hashedPassword := hashPassword(account.Password)
+		_, err := a.DB.Exec("INSERT INTO users(id, email, username, password, phone) VALUES($1, $2, $3, $4, $5) RETURNING id",
+								id, account.Email, account.Username, hashedPassword, account.Phone)
+
+		if err != nil {
+			fmt.Println(err)
+		} else {
+			writer.Write([]byte("Success"))
+		}
+	}
 	defer request.Body.Close()
 }
 
