@@ -26,6 +26,7 @@ import { NgxMaterialTimepickerModule } from "ngx-material-timepicker";
 import { ReactiveFormsModule } from '@angular/forms';
 import { AlarmComponent } from './alarm/alarm.component';
 import { MatCheckboxModule } from '@angular/material/checkbox'
+import {MatDatepickerModule} from '@angular/material/datepicker';
 
 @NgModule({
   declarations: [
@@ -59,7 +60,8 @@ import { MatCheckboxModule } from '@angular/material/checkbox'
     MatNativeDateModule,
     ReactiveFormsModule,
     NgxMaterialTimepickerModule,
-    MatCheckboxModule
+    MatCheckboxModule,
+    MatDatepickerModule,
   ],
   providers: [],
   bootstrap: [AppComponent]
