@@ -59,16 +59,24 @@ func (a *App) createUser(writer http.ResponseWriter, request *http.Request) {
 
 	allFieldsFilled := true
 	containsNonAscii := false
+	validPhoneNumber := true
 	v := reflect.ValueOf(account)
 	for i := 0; i< v.NumField(); i++ {
 		if(v.Field(i).Interface() == ""){
 			allFieldsFilled = false
 		}
     }
-
 	for _, char := range account.Password {
 		if char > 127 {
 			containsNonAscii = true
+		}
+	}
+	if len(account.Phone) != 10 {
+		validPhoneNumber = false
+	}
+	for _, char := range account.Phone {
+		if char < 48 || char > 57 {
+			validPhoneNumber = false
 		}
 	}
 
@@ -76,6 +84,8 @@ func (a *App) createUser(writer http.ResponseWriter, request *http.Request) {
 		writer.Write([]byte("Problem: All fields must be filled"))
 	} else if(containsNonAscii) {
 		writer.Write([]byte("Problem: Password must only contain ASCII characters"))
+	} else if(!validPhoneNumber) {
+		writer.Write([]byte("Problem: Phone number is invalid - must be 10 digits and only contain numbers"))
 	} else {
 		hashedPassword := hashPassword(account.Password)
 		_, err := a.DB.Exec("INSERT INTO users(id, email, username, password, phone) VALUES($1, $2, $3, $4, $5) RETURNING id",
