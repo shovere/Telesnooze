@@ -95,6 +95,20 @@ func TestCreateUser(t *testing.T) {
 }
 
 func TestSetAlarm(t *testing.T){
+	t.Run("No Data",func(t *testing.T) {
+		jsonBody := []byte(``)
+ 		bodyReader := bytes.NewReader(jsonBody)
+		app := &App{}
+		app.initializeApp()
+		request, _ := http.NewRequest(http.MethodPost, "/api/v1/setAlarm", bodyReader)
+		response := httptest.NewRecorder()
+		app.setAlarm(response, request)
+		got := response.Body.String();
+		want :=  "{\"error\":\"Invalid request payload\"}"
+		if got != want {
+			t.Errorf("response body is wrong, got %q want %q", got, want)
+		}
+	})
 	t.Run("Bad Time", func(t *testing.T) {
 		jsonBody := []byte(`{"time": "202-27T17:43:35.668Z",
 							 "days": {
