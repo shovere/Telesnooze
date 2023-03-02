@@ -8,19 +8,11 @@ import { Component } from '@angular/core';
   templateUrl: './signup.component.html',
 })
 export class SignupComponent {
-<<<<<<< HEAD
+  phone: string = '';
   email: string = '';
   username: string = '';
   password: string = '';
   passwordconfirm: string = '';
-  phone: string = '';
-=======
-  phone : string = "";
-  email: string = "";
-  username: string = "";
-  password: string = "";
-  passwordconfirm: string = "";
->>>>>>> main
   show: boolean = false;
   submit() {
     console.log('user name is ' + this.username);
@@ -45,16 +37,10 @@ export class SignupComponent {
     this.clear();
   }
   clear() {
-<<<<<<< HEAD
     this.username = '';
     this.password = '';
     this.passwordconfirm = '';
-=======
-    this.username = "";
-    this.password = "";
-    this.passwordconfirm = "";
-    this.phone = "";
->>>>>>> main
+    this.phone = '';
     this.show = true;
   }
 }
