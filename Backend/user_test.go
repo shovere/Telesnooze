@@ -6,7 +6,7 @@ import (
 	"net/http/httptest"
 	"testing"
 )
-
+All Empty Fields, One Empty Field, Invalid Password, Invalid Phone Number - 10 Digits, Invalid Phone Number - Digits Only, and Optimal Account Creation
 func TestCreateUser(t *testing.T) {
 	t.Run("All Empty Fields", func(t *testing.T) {
 		jsonBody := []byte(`{"email": "", "username": "", "password": "", "phone": ""}`)
@@ -94,15 +94,15 @@ func TestCreateUser(t *testing.T) {
 	})
 }
 
-func TestSetAlarm(t *testing.T){
+func TestCreateAlarm(t *testing.T){
 	t.Run("No Data",func(t *testing.T) {
 		jsonBody := []byte(``)
  		bodyReader := bytes.NewReader(jsonBody)
 		app := &App{}
 		app.initializeApp()
-		request, _ := http.NewRequest(http.MethodPost, "/api/v1/setAlarm", bodyReader)
+		request, _ := http.NewRequest(http.MethodPost, "/api/v1/createAlarm", bodyReader)
 		response := httptest.NewRecorder()
-		app.setAlarm(response, request)
+		app.createAlarm(response, request)
 		got := response.Body.String();
 		want :=  "{\"error\":\"Invalid request payload\"}"
 		if got != want {
@@ -123,9 +123,9 @@ func TestSetAlarm(t *testing.T){
  		bodyReader := bytes.NewReader(jsonBody)
 		app := &App{}
 		app.initializeApp()
-		request, _ := http.NewRequest(http.MethodPost, "/api/v1/setAlarm", bodyReader)
+		request, _ := http.NewRequest(http.MethodPost, "/api/v1/createAlarm", bodyReader)
 		response := httptest.NewRecorder()
-		app.setAlarm(response, request)
+		app.createAlarm(response, request)
 		got := response.Body.String();
 		want := "Timestamp is not in ISO format"
 		if got != want {
@@ -146,9 +146,9 @@ func TestSetAlarm(t *testing.T){
  		bodyReader := bytes.NewReader(jsonBody)
 		app := &App{}
 		app.initializeApp()
-		request, _ := http.NewRequest(http.MethodPost, "/api/v1/setAlarm", bodyReader)
+		request, _ := http.NewRequest(http.MethodPost, "/api/v1/createAlarm", bodyReader)
 		response := httptest.NewRecorder()
-		app.setAlarm(response, request)
+		app.createAlarm(response, request)
 		got := response.Body.String();
 		want := "Problem: Week needs at least one true value OR JSON be malformed"
 		if got != want {
@@ -169,9 +169,9 @@ func TestSetAlarm(t *testing.T){
  		bodyReader := bytes.NewReader(jsonBody)
 		app := &App{}
 		app.initializeApp()
-		request, _ := http.NewRequest(http.MethodPost, "/api/v1/setAlarm", bodyReader)
+		request, _ := http.NewRequest(http.MethodPost, "/api/v1/createAlarm", bodyReader)
 		response := httptest.NewRecorder()
-		app.setAlarm(response, request)
+		app.createAlarm(response, request)
 		got := response.Body.String();
 		want := "Success"
 		if got != want {
