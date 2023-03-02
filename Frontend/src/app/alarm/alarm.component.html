@@ -1,16 +1,15 @@
 <form class="alarm-form">
+  <section class="date-selector">
+    <mat-form-field class="date-prompt" appearance="fill">
+      <mat-label>Choose a date</mat-label>
+      <input matInput [matDatepicker]="picker" name="days" />
+      <mat-hint>MM/DD/YYYY</mat-hint>
+      <mat-datepicker #picker></mat-datepicker>
+    </mat-form-field>
+    <button mat-raised-button (click)="picker.open()">Open</button>
+  </section>
 
-<section class="date-selector">
-<mat-form-field class="date-prompt" appearance="fill">
-    <mat-label>Choose a date</mat-label>
-    <input matInput [matDatepicker]="picker" name="days">
-    <mat-hint>MM/DD/YYYY</mat-hint>
-    <mat-datepicker #picker></mat-datepicker>
-</mat-form-field>
-<button mat-raised-button (click)="picker.open()">Open</button>
-</section>
-
-<!-- Date Range Selector 
+  <!-- Date Range Selector 
 <mat-form-field appearance="fill">
   <mat-label>Enter a date range</mat-label>
   <mat-date-range-input [formGroup]="range" [rangePicker]="picker">
@@ -27,43 +26,49 @@
 
 <p>Selected range: {{range.value | json}}</p> -->
 
-<br>
-<br>
+  <br />
+  <br />
 
-<!--Days of the Week Selector -->
-<section class="week" [formGroup]="week" >
+  <!--Days of the Week Selector -->
+  <section class="week" [formGroup]="week">
     <p class="prompt">Select when you would like your alarm to be active:</p>
-    <p><mat-checkbox formControlName="sunday" name="'sunday" >Sunday</mat-checkbox></p>
+    <p>
+      <mat-checkbox formControlName="sunday" name="'sunday"
+        >Sunday</mat-checkbox
+      >
+    </p>
     <p><mat-checkbox formControlName="monday">Monday</mat-checkbox></p>
     <p><mat-checkbox formControlName="tuesday">Tuesday</mat-checkbox></p>
     <p><mat-checkbox formControlName="wednesday">Wednesday</mat-checkbox></p>
     <p><mat-checkbox formControlName="thursday">Thursday</mat-checkbox></p>
     <p><mat-checkbox formControlName="friday">Friday</mat-checkbox></p>
     <p><mat-checkbox formControlName="saturday">Saturday</mat-checkbox></p>
-  days chosen (for testing): {{week.value | json}}
+    days chosen (for testing): {{ week.value | json }}
   </section>
 
-<!-- Alarm Time Picker -->
-<div class="timepicker">
-<mat-form-field class="time-prompt">
-   <mat-label>Time</mat-label>
+  <!-- Alarm Time Picker -->
+  <div class="timepicker">
+    <mat-form-field class="time-prompt">
+      <mat-label>Time</mat-label>
 
-  <input
-    name="time"
-    matInput
-    aria-label="default time"
-    [ngxTimepicker]="defaultValue"
-    [(ngModel)]="time"/>
+      <input
+        name="time"
+        matInput
+        aria-label="default time"
+        [ngxTimepicker]="defaultValue"
+        [(ngModel)]="time"
+      />
 
-  <ngx-material-timepicker #defaultValue>
-  </ngx-material-timepicker>
-</mat-form-field>
-<button class="alarm-button" mat-button color="primary" type="button" (click)="submit()">
-  Submit
-  </button>
-</div>
+      <ngx-material-timepicker #defaultValue> </ngx-material-timepicker>
+    </mat-form-field>
+    <button
+      class="alarm-button"
+      mat-button
+      color="primary"
+      type="button"
+      (click)="submit()"
+    >
+      Submit
+    </button>
+  </div>
 </form>
-
-
-
-

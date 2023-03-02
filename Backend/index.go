@@ -127,7 +127,7 @@ func sayHello(writer http.ResponseWriter, request *http.Request){
 }
 
 //this a *App  means it applies to the app struct type
-func (a *App) setAlarm(writer http.ResponseWriter, request *http.Request){
+func (a *App) createAlarm(writer http.ResponseWriter, request *http.Request){
 
 	//TODO 
 	//check that there is at least one true value for days of the week
@@ -177,7 +177,7 @@ func main(){
 	app := &App{}
 	app.initializeApp()
 	app.router.HandleFunc("/api/v1/", sayHello).Methods("GET");
-	app.router.HandleFunc("/api/v1/setAlarm", app.setAlarm).Methods("POST")
+	app.router.HandleFunc("/api/v1/createAlarm", app.createAlarm).Methods("POST")
 	app.router.HandleFunc("/api/v1/createUser", app.createUser).Methods("POST")
 	c := cors.New(cors.Options{
         AllowedOrigins: []string{"*"},
