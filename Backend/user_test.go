@@ -179,3 +179,26 @@ func TestCreateAlarm(t *testing.T){
 		}
 	})
 }
+
+
+func TestCallNumberStandard(t *testing.T){
+	t.Run("Standard Run", func(t *testing.T) {
+		got := callNumber("+16035689902")
+		want := "queued"
+		if got != want {
+			t.Errorf("response body is wrong, got %q want %q", got, want)
+		}
+	})
+	
+}
+
+func TestCallNumberFail(t *testing.T){
+	t.Run("Unverified number", func(t *testing.T) {
+		got := callNumber("+11111111111")
+		want := "Could not place call, check logs for error"
+		if got != want {
+			t.Errorf("response body is wrong, got %q want %q", got, want)
+		}
+	})
+	
+}
