@@ -9,6 +9,10 @@ require (
 )
 
 require (
+	github.com/golang/mock v1.6.0 // indirect
 	github.com/gorilla/mux v1.8.0 // indirect
+	github.com/joho/godotenv v1.5.1 // indirect
+	github.com/pkg/errors v0.9.1 // indirect
 	github.com/relvacode/iso8601 v1.3.0 // indirect
+	github.com/twilio/twilio-go v1.3.5 // indirect
 )

@@ -6,7 +6,7 @@ import (
 	"net/http/httptest"
 	"testing"
 )
-All Empty Fields, One Empty Field, Invalid Password, Invalid Phone Number - 10 Digits, Invalid Phone Number - Digits Only, and Optimal Account Creation
+
 func TestCreateUser(t *testing.T) {
 	t.Run("All Empty Fields", func(t *testing.T) {
 		jsonBody := []byte(`{"email": "", "username": "", "password": "", "phone": ""}`)
