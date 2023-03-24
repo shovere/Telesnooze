@@ -173,8 +173,6 @@ func (a *App) createAlarm(writer http.ResponseWriter, request *http.Request) {
 	defer request.Body.Close()
 }
 
-// Create an authentication endpoint that takes in the username and password and returns the UUID of the user if it finds a match, then store it somewhere for later access to other parts of the app
-
 func (a *App) authenticationEndpoint(writer http.ResponseWriter, request *http.Request) {
 	var account account
 	decoder := json.NewDecoder(request.Body)
