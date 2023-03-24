@@ -17,27 +17,27 @@ import (
 )
 
 type account struct {
-	Email string `json:"email"`
+	Email    string `json:"email"`
 	Username string `json:"username"`
 	Password string `json:"password"`
-	Phone string `json:"phone"`
+	Phone    string `json:"phone"`
 }
 type alarm struct {
 	Time string `json:"time"`
 	Week struct {
-		Sunday bool `json:"sunday"`
-		Monday bool `json:"monday"`
-		Tuesday bool `json:"tuesday"`
+		Sunday    bool `json:"sunday"`
+		Monday    bool `json:"monday"`
+		Tuesday   bool `json:"tuesday"`
 		Wednesday bool `json:"wednesday"`
-		Thursday bool `json:"thursday"`
-		Friday bool `json:"friday"`
-		Saturday bool `json:"saturday"`
+		Thursday  bool `json:"thursday"`
+		Friday    bool `json:"friday"`
+		Saturday  bool `json:"saturday"`
 	} `json:"days"`
 }
 
 type App struct {
 	router *mux.Router
-	DB *sql.DB
+	DB     *sql.DB
 }
 
 func hashPassword(password string) []byte {
@@ -48,24 +48,24 @@ func hashPassword(password string) []byte {
 
 func (a *App) createUser(writer http.ResponseWriter, request *http.Request) {
 	var account account
-	decoder := json.NewDecoder(request.Body);
-    errDecode := decoder.Decode(&account);
+	decoder := json.NewDecoder(request.Body)
+	errDecode := decoder.Decode(&account)
 	id := uuid.New()
-	if (errDecode != nil) {
+	if errDecode != nil {
 		fmt.Println(errDecode)
-        respondWithError(writer, http.StatusBadRequest, "Invalid request payload")
-        return
-    }
+		respondWithError(writer, http.StatusBadRequest, "Invalid request payload")
+		return
+	}
 
 	allFieldsFilled := true
 	containsNonAscii := false
 	validPhoneNumber := true
 	v := reflect.ValueOf(account)
-	for i := 0; i< v.NumField(); i++ {
-		if(v.Field(i).Interface() == ""){
+	for i := 0; i < v.NumField(); i++ {
+		if v.Field(i).Interface() == "" {
 			allFieldsFilled = false
 		}
-    }
+	}
 	for _, char := range account.Password {
 		if char > 127 {
 			containsNonAscii = true
@@ -80,16 +80,16 @@ func (a *App) createUser(writer http.ResponseWriter, request *http.Request) {
 		}
 	}
 
-	if(!allFieldsFilled) {
+	if !allFieldsFilled {
 		writer.Write([]byte("Problem: All fields must be filled"))
-	} else if(containsNonAscii) {
+	} else if containsNonAscii {
 		writer.Write([]byte("Problem: Password must only contain ASCII characters"))
-	} else if(!validPhoneNumber) {
+	} else if !validPhoneNumber {
 		writer.Write([]byte("Problem: Phone number is invalid - must be 10 digits and only contain numbers"))
 	} else {
 		hashedPassword := hashPassword(account.Password)
 		_, err := a.DB.Exec("INSERT INTO users(id, email, username, password, phone) VALUES($1, $2, $3, $4, $5) RETURNING id",
-								id, account.Email, account.Username, hashedPassword, account.Phone)
+			id, account.Email, account.Username, hashedPassword, account.Phone)
 
 		if err != nil {
 			fmt.Println(err)
@@ -101,69 +101,69 @@ func (a *App) createUser(writer http.ResponseWriter, request *http.Request) {
 }
 
 func respondWithError(w http.ResponseWriter, code int, message string) {
-    respondWithJSON(w, code, map[string]string{"error": message})
+	respondWithJSON(w, code, map[string]string{"error": message})
 }
 
 func respondWithJSON(w http.ResponseWriter, code int, payload interface{}) {
-    response, _ := json.Marshal(payload)
+	response, _ := json.Marshal(payload)
 
-    w.Header().Set("Content-Type", "application/json")
-    w.WriteHeader(code)
-    w.Write(response)
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(code)
+	w.Write(response)
 }
 
 func (a *App) initializeApp() {
-	db, err := sql.Open("sqlite3","telesnooze.db");
+	db, err := sql.Open("sqlite3", "telesnooze.db")
 	if err != nil {
 		panic("failed to connect database")
-	  }
+	}
 	a.DB = db
-	a.router = mux.NewRouter();
+	a.router = mux.NewRouter()
 }
 
-func sayHello(writer http.ResponseWriter, request *http.Request){
+func sayHello(writer http.ResponseWriter, request *http.Request) {
 	fmt.Println("hello new user")
 	writer.Header().Set("hello", "there")
 }
 
-//this a *App  means it applies to the app struct type
-func (a *App) createAlarm(writer http.ResponseWriter, request *http.Request){
+// this a *App  means it applies to the app struct type
+func (a *App) createAlarm(writer http.ResponseWriter, request *http.Request) {
 
-	//TODO 
+	//TODO
 	//check that there is at least one true value for days of the week
 	var alarm alarm
-	decoder := json.NewDecoder(request.Body);
-	
-	errDecode := decoder.Decode(&alarm);
-	fmt.Printf("%v: %v\n", alarm.Time, alarm.Week)
-	if (errDecode != nil) {
-		fmt.Println(errDecode)
-        respondWithError(writer, http.StatusBadRequest, "Invalid request payload")
-        return
-    }
-	id := uuid.New();
-	_,tmErr := iso8601.ParseString(alarm.Time);
-	v := reflect.ValueOf(alarm.Week)
-	hasDaysOfWeek := false;
+	decoder := json.NewDecoder(request.Body)
 
-	for i := 0; i< v.NumField(); i++ {
-		if(v.Field(i).Interface() == true){
+	errDecode := decoder.Decode(&alarm)
+	fmt.Printf("%v: %v\n", alarm.Time, alarm.Week)
+	if errDecode != nil {
+		fmt.Println(errDecode)
+		respondWithError(writer, http.StatusBadRequest, "Invalid request payload")
+		return
+	}
+	id := uuid.New()
+	_, tmErr := iso8601.ParseString(alarm.Time)
+	v := reflect.ValueOf(alarm.Week)
+	hasDaysOfWeek := false
+
+	for i := 0; i < v.NumField(); i++ {
+		if v.Field(i).Interface() == true {
 			hasDaysOfWeek = true
 		}
-    }
-	
-	if(tmErr != nil){
-   		writer.Write([]byte("Timestamp is not in ISO format"))
-	} else if(!hasDaysOfWeek){
-   		writer.Write([]byte("Problem: Week needs at least one true value OR JSON be malformed"))
+	}
 
-	}else  {
+	if tmErr != nil {
+		writer.Write([]byte("Timestamp is not in ISO format"))
+	} else if !hasDaysOfWeek {
+		writer.Write([]byte("Problem: Week needs at least one true value OR JSON be malformed"))
+
+	} else {
 		_, err := a.DB.Exec(
 			`INSERT INTO alarms(id, time, sunday, monday, tuesday, wednesday, thursday,friday,saturday) 
 			 VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING id`,
-			 id, alarm.Time, alarm.Week.Sunday, alarm.Week.Monday, alarm.Week.Tuesday, alarm.Week.Wednesday, alarm.Week.Thursday, alarm.Week.Friday, alarm.Week.Saturday); 
-		if(err != nil){
-			fmt.Println("failure: ", err);
+			id, alarm.Time, alarm.Week.Sunday, alarm.Week.Monday, alarm.Week.Tuesday, alarm.Week.Wednesday, alarm.Week.Thursday, alarm.Week.Friday, alarm.Week.Saturday)
+		if err != nil {
+			fmt.Println("failure: ", err)
 			writer.Write([]byte("Something went wrong in DB process"))
 		} else {
 			writer.Write([]byte("Success"))
@@ -173,17 +173,38 @@ func (a *App) createAlarm(writer http.ResponseWriter, request *http.Request){
 	defer request.Body.Close()
 }
 
-func main(){
+func (a *App) authenticationEndpoint(writer http.ResponseWriter, request *http.Request) {
+	var account account
+	decoder := json.NewDecoder(request.Body)
+	errDecode := decoder.Decode(&account)
+	if errDecode != nil {
+		fmt.Println(errDecode)
+		respondWithError(writer, http.StatusBadRequest, "Invalid request payload")
+		return
+	}
+	hashedPassword := hashPassword(account.Password)
+	var id string
+	err := a.DB.QueryRow("SELECT id FROM users WHERE username = $3 AND password = $4", account.Username, hashedPassword).Scan(&id)
+	if err != nil {
+		fmt.Println(err)
+		writer.Write([]byte("Problem: Username or password is incorrect"))
+	} else {
+		writer.Write([]byte("Successful find"))
+	}
+	defer request.Body.Close()
+}
+
+func main() {
 	app := &App{}
 	app.initializeApp()
-	app.router.HandleFunc("/api/v1/", sayHello).Methods("GET");
+	app.router.HandleFunc("/api/v1/", sayHello).Methods("GET")
 	app.router.HandleFunc("/api/v1/createAlarm", app.createAlarm).Methods("POST")
 	app.router.HandleFunc("/api/v1/createUser", app.createUser).Methods("POST")
 	c := cors.New(cors.Options{
-        AllowedOrigins: []string{"*"},
-        AllowCredentials: true,
-    })
+		AllowedOrigins:   []string{"*"},
+		AllowCredentials: true,
+	})
 	handler := c.Handler(app.router)
 	fmt.Println("Server at 8123")
-    log.Fatal(http.ListenAndServe(":8123",handler))
+	log.Fatal(http.ListenAndServe(":8123", handler))
 }

@@ -7,6 +7,37 @@ import (
 	"testing"
 )
 
+func TestAuthenticateLogin(t *testing.T) {
+	t.Run("Authenticating Login", func(t *testing.T) {
+		jsonBody := []byte(`{"username": "Sean", "password": "Hernandez"}`)
+		bodyReader := bytes.NewReader(jsonBody)
+		app := &App{}
+		app.initializeApp()
+		request, _ := http.NewRequest(http.MethodPost, "/api/v1/authenticationEndpoint", bodyReader)
+		response := httptest.NewRecorder()
+		app.authenticationEndpoint(response, request)
+		got := response.Body.String();
+		want := "Successful find"
+		if got != want {
+			t.Errorf("response body is wrong, got %q want %q", got, want)
+		}
+	})
+	t.Run("Failed Login", func(t *testing.T) {
+		jsonBody := []byte(`{"username": "uvdnioqcwdhnclq", "password": "erjnlirnle"}`)
+		bodyReader := bytes.NewReader(jsonBody)
+		app := &App{}
+		app.initializeApp()
+		request, _ := http.NewRequest(http.MethodPost, "/api/v1/authenticationEndpoint", bodyReader)
+		response := httptest.NewRecorder()
+		app.authenticationEndpoint(response, request)
+		got := response.Body.String();
+		want := "Problem: Username or password is incorrect"
+		if got != want {
+			t.Errorf("response body is wrong, got %q want %q", got, want)
+		}
+	})
+}
+
 func TestCreateUser(t *testing.T) {
 	t.Run("All Empty Fields", func(t *testing.T) {
 		jsonBody := []byte(`{"email": "", "username": "", "password": "", "phone": ""}`)
