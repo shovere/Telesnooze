@@ -186,7 +186,6 @@ func (a *App) retrieveAlarms(writer http.ResponseWriter, request *http.Request){
 	//check that there is at least one true value for days of the week
 	var tmpRetAlarm retAlarms
 	decoder := json.NewDecoder(request.Body)
-
 	errDecode := decoder.Decode(&tmpRetAlarm)
 	fmt.Printf("%v", tmpRetAlarm.User_ID)
 	if errDecode != nil {
@@ -238,7 +237,62 @@ func (a *App) retrieveAlarms(writer http.ResponseWriter, request *http.Request){
 	defer request.Body.Close()
 }
 func (a *App) updateAlarm(writer http.ResponseWriter, request *http.Request){
-	
+	var alarm alarm
+	decoder := json.NewDecoder(request.Body)
+
+	errDecode := decoder.Decode(&alarm)
+	fmt.Printf("%v: %v\n", alarm.Time, alarm.Week)
+	if errDecode != nil {
+		fmt.Println(errDecode)
+		respondWithError(writer, http.StatusBadRequest, "Invalid request payload")
+		return
+	}
+	id := uuid.New()
+	_, tmErr := iso8601.ParseString(alarm.Time)
+	v := reflect.ValueOf(alarm.Week)
+	hasDaysOfWeek := false
+
+	for i := 0; i < v.NumField(); i++ {
+		if v.Field(i).Interface() == true {
+			hasDaysOfWeek = true
+		}
+	}
+
+	if tmErr != nil {
+		writer.Write([]byte("Timestamp is not in ISO format"))
+	} else if !hasDaysOfWeek {
+		writer.Write([]byte("Problem: Week needs at least one true value OR JSON be malformed"))
+
+	} else {
+		_, err := a.DB.Exec(
+			`UPDATE alarms
+			 SET time = $2, 
+				sunday = $3, 
+				monday = $4, 
+				tuesday = $5, 
+				wednesday = $6, 
+				thursday = $7, 
+				friday = $8, 
+				saturday = $9
+			 WHERE id = $1 AND user_id = $10`,
+			id, alarm.Time, 
+			alarm.Week.Sunday, 
+			alarm.Week.Monday, 
+			alarm.Week.Tuesday, 
+			alarm.Week.Wednesday, 
+			alarm.Week.Thursday, 
+			alarm.Week.Friday, 
+			alarm.Week.Saturday, 
+			alarm.User_ID)
+		if err != nil {
+			fmt.Println("failure: ", err)
+			writer.Write([]byte("Something went wrong in DB process"))
+		} else {
+			writer.Write([]byte("Success"))
+		}
+	}
+
+	defer request.Body.Close()
 }
 func (a *App) deleteAlarm(writer http.ResponseWriter, request *http.Request){
 	
@@ -271,6 +325,7 @@ func main() {
 	app.router.HandleFunc("/api/v1/", sayHello).Methods("GET")
 	app.router.HandleFunc("/api/v1/createAlarm", app.createAlarm).Methods("POST")
 	app.router.HandleFunc("/api/v1/retrieveAlarms", app.retrieveAlarms).Methods("POST")
+	app.router.HandleFunc("/api/v1/updateAlarm", app.updateAlarm).Methods("POST")
 	app.router.HandleFunc("/api/v1/createUser", app.createUser).Methods("POST")
 	c := cors.New(cors.Options{
 		AllowedOrigins:   []string{"*"},
