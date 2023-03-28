@@ -2,6 +2,8 @@ package main
 
 import (
 	"bytes"
+	"encoding/json"
+	"fmt"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -242,17 +244,31 @@ func TestCallNumberFail(t *testing.T){
 
 func TestRetreiveAlarm(t *testing.T){
 	t.Run("Basic Test",func(t *testing.T) {
+	
 		jsonBody := []byte(`{"user_id": "83f18bdf-2e8f-4cd0-bfba-8dd0ec79aa97"}`)
  		bodyReader := bytes.NewReader(jsonBody)
 		app := &App{}
 		app.initializeApp()
 		request, _ := http.NewRequest(http.MethodPost, "/api/v1/retrieveAlarm", bodyReader)
 		response := httptest.NewRecorder()
+	
 		app.retrieveAlarms(response, request)
-		got := response.Body.String();
-		want :=  "{\"error\":\"Invalid request payload\"}"
-		if got != want {
-			t.Errorf("response body is wrong, got %q want %q", got, want)
+		
+		var tmpRetAlarm retAlarms
+		decoder := json.NewDecoder(response.Body)
+	
+		errDecode := decoder.Decode(&tmpRetAlarm)
+		fmt.Printf("%v", tmpRetAlarm.User_ID)
+		if errDecode != nil {
+			fmt.Println(errDecode)
+			return
+		}
+
+		fmt.Println("array")
+		fmt.Println(tmpRetAlarm)
+		got := len(tmpRetAlarm.Alarms);
+		if got == 0 {
+			t.Errorf("response body is wrong, got %q", got)
 		}
 	})
 }

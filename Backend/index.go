@@ -26,6 +26,7 @@ type account struct {
 type alarm struct {
 	User_ID string `json:"user_id"`
 	Time string `json:"time"`
+	Alarm_ID string 
 	Week struct {
 		Sunday    bool `json:"sunday"`
 		Monday    bool `json:"monday"`
@@ -36,9 +37,9 @@ type alarm struct {
 		Saturday  bool `json:"saturday"`
 	} `json:"days"`
 }
-
 type retAlarms struct {
 	User_ID string `json:"user_id"`
+	Alarms []alarm `json:"alarms"`
 }
 
 type App struct {
@@ -205,9 +206,27 @@ func (a *App) retrieveAlarms(writer http.ResponseWriter, request *http.Request){
 		writer.Write([]byte("Something went wrong in DB process"))
 	} else {
 		defer rows.Close()
-		//need to json nonsense here
+		var rowAlarm []alarm;
+		for rows.Next() {
+			var al alarm
+			err := rows.Scan(&al.Alarm_ID, 
+					&al.Time, 
+					&al.Week.Sunday, 
+					&al.Week.Monday, 
+					&al.Week.Tuesday,
+					&al.Week.Wednesday, 
+					&al.Week.Thursday, 
+					&al.Week.Friday, 
+					&al.Week.Saturday, 
+					&al.User_ID)
+			if err != nil {
+				log.Fatal(err)
+			}
+			rowAlarm = append(rowAlarm, al)
+		}
+		tmpRetAlarm.Alarms = rowAlarm;
 		buf := new(bytes.Buffer)
-		newErr := json.NewEncoder(buf).Encode(rows)
+		newErr := json.NewEncoder(buf).Encode(tmpRetAlarm)
 		if newErr != nil {
 			log.Fatal(newErr)
 		}
