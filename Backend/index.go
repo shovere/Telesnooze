@@ -247,7 +247,6 @@ func (a *App) updateAlarm(writer http.ResponseWriter, request *http.Request){
 		respondWithError(writer, http.StatusBadRequest, "Invalid request payload")
 		return
 	}
-	id := uuid.New()
 	_, tmErr := iso8601.ParseString(alarm.Time)
 	v := reflect.ValueOf(alarm.Week)
 	hasDaysOfWeek := false
@@ -275,7 +274,8 @@ func (a *App) updateAlarm(writer http.ResponseWriter, request *http.Request){
 				friday = $8, 
 				saturday = $9
 			 WHERE id = $1 AND user_id = $10`,
-			id, alarm.Time, 
+			alarm.Alarm_ID, 
+			alarm.Time, 
 			alarm.Week.Sunday, 
 			alarm.Week.Monday, 
 			alarm.Week.Tuesday, 
@@ -295,7 +295,31 @@ func (a *App) updateAlarm(writer http.ResponseWriter, request *http.Request){
 	defer request.Body.Close()
 }
 func (a *App) deleteAlarm(writer http.ResponseWriter, request *http.Request){
+	var alarm alarm
+	decoder := json.NewDecoder(request.Body)
+
+	errDecode := decoder.Decode(&alarm)
+	fmt.Printf("%v: %v\n", alarm.Time, alarm.Week)
+	if errDecode != nil {
+		fmt.Println(errDecode)
+		respondWithError(writer, http.StatusBadRequest, "Invalid request payload")
+		return
+	}
 	
+		_, err := a.DB.Exec(
+			`DELETE
+			 FROM alarms
+			 WHERE id = $1 `,
+			alarm.Alarm_ID)
+		if err != nil {
+			fmt.Println("failure: ", err)
+			writer.Write([]byte("Something went wrong in DB process"))
+		} else {
+			writer.Write([]byte("Success"))
+		}
+	
+
+	defer request.Body.Close()
 }
 
 func (a *App) authenticationEndpoint(writer http.ResponseWriter, request *http.Request) {
@@ -319,6 +343,7 @@ func (a *App) authenticationEndpoint(writer http.ResponseWriter, request *http.R
 	defer request.Body.Close()
 }
 
+
 func main() {
 	app := &App{}
 	app.initializeApp()
@@ -326,6 +351,7 @@ func main() {
 	app.router.HandleFunc("/api/v1/createAlarm", app.createAlarm).Methods("POST")
 	app.router.HandleFunc("/api/v1/retrieveAlarms", app.retrieveAlarms).Methods("POST")
 	app.router.HandleFunc("/api/v1/updateAlarm", app.updateAlarm).Methods("POST")
+	app.router.HandleFunc("/api/v1/deleteAlarm", app.deleteAlarm).Methods("POST")
 	app.router.HandleFunc("/api/v1/createUser", app.createUser).Methods("POST")
 	c := cors.New(cors.Options{
 		AllowedOrigins:   []string{"*"},

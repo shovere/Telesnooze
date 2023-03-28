@@ -309,7 +309,7 @@ func TestUpdateAlarm(t *testing.T){
 		app.initializeApp()
 		request, _ := http.NewRequest(http.MethodPost, "/api/v1/updateAlarm", bodyReader)
 		response := httptest.NewRecorder()
-		app.createAlarm(response, request)
+		app.updateAlarm(response, request)
 		got := response.Body.String();
 		want :=  "{\"error\":\"Invalid request payload\"}"
 		if got != want {
@@ -335,7 +335,7 @@ func TestUpdateAlarm(t *testing.T){
 		app.initializeApp()
 		request, _ := http.NewRequest(http.MethodPost, "/api/v1/updateAlarm", bodyReader)
 		response := httptest.NewRecorder()
-		app.createAlarm(response, request)
+		app.updateAlarm(response, request)
 		got := response.Body.String();
 		want := "Timestamp is not in ISO format"
 		if got != want {
@@ -361,7 +361,7 @@ func TestUpdateAlarm(t *testing.T){
 		app.initializeApp()
 		request, _ := http.NewRequest(http.MethodPost, "/api/v1/updateAlarm", bodyReader)
 		response := httptest.NewRecorder()
-		app.createAlarm(response, request)
+		app.updateAlarm(response, request)
 		got := response.Body.String();
 		want := "Problem: Week needs at least one true value OR JSON be malformed"
 		if got != want {
@@ -387,7 +387,39 @@ func TestUpdateAlarm(t *testing.T){
 		app.initializeApp()
 		request, _ := http.NewRequest(http.MethodPost, "/api/v1/updateAlarm", bodyReader)
 		response := httptest.NewRecorder()
-		app.createAlarm(response, request)
+		app.updateAlarm(response, request)
+		got := response.Body.String();
+		want := "Success"
+		if got != want {
+			t.Errorf("response body is wrong, got %q want %q", got, want)
+		}
+	})
+}
+
+func TestDeleteAlarm(t *testing.T){
+	t.Run("No Data",func(t *testing.T) {
+		jsonBody := []byte(``)
+ 		bodyReader := bytes.NewReader(jsonBody)
+		app := &App{}
+		app.initializeApp()
+		request, _ := http.NewRequest(http.MethodPost, "/api/v1/deleteAlarm", bodyReader)
+		response := httptest.NewRecorder()
+		app.deleteAlarm(response, request)
+		got := response.Body.String();
+		want :=  "{\"error\":\"Invalid request payload\"}"
+		if got != want {
+			t.Errorf("response body is wrong, got %q want %q", got, want)
+		}
+	})
+		
+	t.Run("Delete Alarm", func(t *testing.T) {
+		jsonBody := []byte(`{"alarm_id": "0664c23d-673c-47c4-85d6-97e77203f877"}`)
+ 		bodyReader := bytes.NewReader(jsonBody)
+		app := &App{}
+		app.initializeApp()
+		request, _ := http.NewRequest(http.MethodPost, "/api/v1/deleteAlarm", bodyReader)
+		response := httptest.NewRecorder()
+		app.deleteAlarm(response, request)
 		got := response.Body.String();
 		want := "Success"
 		if got != want {
