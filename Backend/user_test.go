@@ -2,6 +2,8 @@ package main
 
 import (
 	"bytes"
+	"encoding/json"
+	"fmt"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -141,7 +143,9 @@ func TestCreateAlarm(t *testing.T){
 		}
 	})
 	t.Run("Bad Time", func(t *testing.T) {
-		jsonBody := []byte(`{"time": "202-27T17:43:35.668Z",
+		jsonBody := []byte(`{
+			"user_id": "83f18bdf-2e8f-4cd0-bfba-8dd0ec79aa97",
+			"time": "202-27T17:43:35.668Z",
 							 "days": {
 								"sunday": false, 
 								"monday": false, 
@@ -164,7 +168,9 @@ func TestCreateAlarm(t *testing.T){
 		}
 	})
 	t.Run("Bad Weekdays",func(t *testing.T) {
-		jsonBody := []byte(`{"time": "2023-02-27T17:43:35.668Z",
+		jsonBody := []byte(`{
+			"user_id": "83f18bdf-2e8f-4cd0-bfba-8dd0ec79aa97",
+			"time": "2023-02-27T17:43:35.668Z",
 							 "days": {
 								"sunday": false, 
 								"monday": false, 
@@ -187,7 +193,9 @@ func TestCreateAlarm(t *testing.T){
 		}
 	})
 	t.Run("Optimal Test Alarm", func(t *testing.T) {
-		jsonBody := []byte(`{"time": "2023-02-27T17:43:35.668Z",
+		jsonBody := []byte(`{
+							"user_id": "83f18bdf-2e8f-4cd0-bfba-8dd0ec79aa97",
+							"time": "2023-02-27T17:43:35.668Z",
 							 "days": {
 								"sunday": false, 
 								"monday": false, 
@@ -232,4 +240,190 @@ func TestCallNumberFail(t *testing.T){
 		}
 	})
 	
+}
+
+func TestRetreiveAlarms(t *testing.T){
+	t.Run("Basic Test",func(t *testing.T) {
+		jsonBody := []byte(`{"user_id": "83f18bdf-2e8f-4cd0-bfba-8dd0ec79aa97"}`)
+ 		bodyReader := bytes.NewReader(jsonBody)
+		app := &App{}
+		app.initializeApp()
+		request, _ := http.NewRequest(http.MethodPost, "/api/v1/retrieveAlarm", bodyReader)
+		response := httptest.NewRecorder()
+	
+		app.retrieveAlarms(response, request)
+		
+		var tmpRetAlarm retAlarms
+		decoder := json.NewDecoder(response.Body)
+	
+		errDecode := decoder.Decode(&tmpRetAlarm)
+		fmt.Printf("%v", tmpRetAlarm.User_ID)
+		if errDecode != nil {
+			fmt.Println(errDecode)
+			return
+		}
+
+		fmt.Println("array")
+		fmt.Println(tmpRetAlarm)
+		got := len(tmpRetAlarm.Alarms);
+		if got == 0 {
+			t.Errorf("response body is wrong, got %q", got)
+		}
+	})
+
+	//should not return any alarms
+	t.Run("No user id",func(t *testing.T) {
+		jsonBody := []byte(`{"user_id": ""}`)
+ 		bodyReader := bytes.NewReader(jsonBody)
+		app := &App{}
+		app.initializeApp()
+		request, _ := http.NewRequest(http.MethodPost, "/api/v1/retrieveAlarm", bodyReader)
+		response := httptest.NewRecorder()
+	
+		app.retrieveAlarms(response, request)
+		
+		var tmpRetAlarm retAlarms
+		decoder := json.NewDecoder(response.Body)
+	
+		errDecode := decoder.Decode(&tmpRetAlarm)
+		fmt.Printf("%v", tmpRetAlarm.User_ID)
+		if errDecode != nil {
+			fmt.Println(errDecode)
+			return
+		}
+
+		fmt.Println("array")
+		fmt.Println(tmpRetAlarm)
+		got := len(tmpRetAlarm.Alarms);
+		if got != 0 {
+			t.Errorf("response body is wrong, got %q", got)
+		}
+	})
+}
+
+func TestUpdateAlarm(t *testing.T){
+	t.Run("No Data",func(t *testing.T) {
+		jsonBody := []byte(``)
+ 		bodyReader := bytes.NewReader(jsonBody)
+		app := &App{}
+		app.initializeApp()
+		request, _ := http.NewRequest(http.MethodPost, "/api/v1/updateAlarm", bodyReader)
+		response := httptest.NewRecorder()
+		app.updateAlarm(response, request)
+		got := response.Body.String();
+		want :=  "{\"error\":\"Invalid request payload\"}"
+		if got != want {
+			t.Errorf("response body is wrong, got %q want %q", got, want)
+		}
+	})
+	t.Run("Bad Time", func(t *testing.T) {
+		jsonBody := []byte(`{
+			"user_id": "83f18bdf-2e8f-4cd0-bfba-8dd0ec79aa97",
+			"alarm_id": "0664c23d-673c-47c4-85d6-97e77203f877",
+			"time": "202-27T17:43:35.668Z",
+							 "days": {
+								"sunday": false, 
+								"monday": false, 
+								"tuesday": true, 
+								"wednesday": false, 
+								"thursday": false, 
+								"friday": false, 
+								"saturday": false
+							 }}`)
+ 		bodyReader := bytes.NewReader(jsonBody)
+		app := &App{}
+		app.initializeApp()
+		request, _ := http.NewRequest(http.MethodPost, "/api/v1/updateAlarm", bodyReader)
+		response := httptest.NewRecorder()
+		app.updateAlarm(response, request)
+		got := response.Body.String();
+		want := "Timestamp is not in ISO format"
+		if got != want {
+			t.Errorf("response body is wrong, got %q want %q", got, want)
+		}
+	})
+	t.Run("Bad Weekdays",func(t *testing.T) {
+		jsonBody := []byte(`{
+			"user_id": "83f18bdf-2e8f-4cd0-bfba-8dd0ec79aa97",
+			"alarm_id": "0664c23d-673c-47c4-85d6-97e77203f877",
+			"time": "2023-02-27T17:43:35.668Z",
+							 "days": {
+								"sunday": false, 
+								"monday": false, 
+								"tuesday": false, 
+								"wednesday": false, 
+								"thursday": false, 
+								"friday": false, 
+								"saturday": false
+							 }}`)
+ 		bodyReader := bytes.NewReader(jsonBody)
+		app := &App{}
+		app.initializeApp()
+		request, _ := http.NewRequest(http.MethodPost, "/api/v1/updateAlarm", bodyReader)
+		response := httptest.NewRecorder()
+		app.updateAlarm(response, request)
+		got := response.Body.String();
+		want := "Problem: Week needs at least one true value OR JSON be malformed"
+		if got != want {
+			t.Errorf("response body is wrong, got %q want %q", got, want)
+		}
+	})
+	t.Run("Optimal Test Alarm", func(t *testing.T) {
+		jsonBody := []byte(`{
+							"user_id": "83f18bdf-2e8f-4cd0-bfba-8dd0ec79aa97",
+							"alarm_id": "0664c23d-673c-47c4-85d6-97e77203f877",
+							"time": "2023-02-27T17:43:35.668Z",
+							 "days": {
+								"sunday": true, 
+								"monday": true, 
+								"tuesday": true, 
+								"wednesday": true, 
+								"thursday": true, 
+								"friday": false, 
+								"saturday": false
+							 }}`)
+ 		bodyReader := bytes.NewReader(jsonBody)
+		app := &App{}
+		app.initializeApp()
+		request, _ := http.NewRequest(http.MethodPost, "/api/v1/updateAlarm", bodyReader)
+		response := httptest.NewRecorder()
+		app.updateAlarm(response, request)
+		got := response.Body.String();
+		want := "Success"
+		if got != want {
+			t.Errorf("response body is wrong, got %q want %q", got, want)
+		}
+	})
+}
+
+func TestDeleteAlarm(t *testing.T){
+	t.Run("No Data",func(t *testing.T) {
+		jsonBody := []byte(``)
+ 		bodyReader := bytes.NewReader(jsonBody)
+		app := &App{}
+		app.initializeApp()
+		request, _ := http.NewRequest(http.MethodPost, "/api/v1/deleteAlarm", bodyReader)
+		response := httptest.NewRecorder()
+		app.deleteAlarm(response, request)
+		got := response.Body.String();
+		want :=  "{\"error\":\"Invalid request payload\"}"
+		if got != want {
+			t.Errorf("response body is wrong, got %q want %q", got, want)
+		}
+	})
+		
+	t.Run("Delete Alarm", func(t *testing.T) {
+		jsonBody := []byte(`{"alarm_id": "0664c23d-673c-47c4-85d6-97e77203f877"}`)
+ 		bodyReader := bytes.NewReader(jsonBody)
+		app := &App{}
+		app.initializeApp()
+		request, _ := http.NewRequest(http.MethodPost, "/api/v1/deleteAlarm", bodyReader)
+		response := httptest.NewRecorder()
+		app.deleteAlarm(response, request)
+		got := response.Body.String();
+		want := "Success"
+		if got != want {
+			t.Errorf("response body is wrong, got %q want %q", got, want)
+		}
+	})
 }
