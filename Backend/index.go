@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bytes"
 	"crypto/sha256"
 	"database/sql"
 	"encoding/json"
@@ -23,6 +24,7 @@ type account struct {
 	Phone    string `json:"phone"`
 }
 type alarm struct {
+	User_ID string `json:"user_id"`
 	Time string `json:"time"`
 	Week struct {
 		Sunday    bool `json:"sunday"`
@@ -33,6 +35,10 @@ type alarm struct {
 		Friday    bool `json:"friday"`
 		Saturday  bool `json:"saturday"`
 	} `json:"days"`
+}
+
+type retAlarms struct {
+	User_ID string `json:"user_id"`
 }
 
 type App struct {
@@ -159,9 +165,9 @@ func (a *App) createAlarm(writer http.ResponseWriter, request *http.Request) {
 
 	} else {
 		_, err := a.DB.Exec(
-			`INSERT INTO alarms(id, time, sunday, monday, tuesday, wednesday, thursday,friday,saturday) 
-			 VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING id`,
-			id, alarm.Time, alarm.Week.Sunday, alarm.Week.Monday, alarm.Week.Tuesday, alarm.Week.Wednesday, alarm.Week.Thursday, alarm.Week.Friday, alarm.Week.Saturday)
+			`INSERT INTO alarms(id, time, sunday, monday, tuesday, wednesday, thursday,friday,saturday, user_id) 
+			 VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9, $10) RETURNING id`,
+			id, alarm.Time, alarm.Week.Sunday, alarm.Week.Monday, alarm.Week.Tuesday, alarm.Week.Wednesday, alarm.Week.Thursday, alarm.Week.Friday, alarm.Week.Saturday, alarm.User_ID)
 		if err != nil {
 			fmt.Println("failure: ", err)
 			writer.Write([]byte("Something went wrong in DB process"))
@@ -171,6 +177,52 @@ func (a *App) createAlarm(writer http.ResponseWriter, request *http.Request) {
 	}
 
 	defer request.Body.Close()
+}
+
+func (a *App) retrieveAlarms(writer http.ResponseWriter, request *http.Request){
+	
+	//TODO
+	//check that there is at least one true value for days of the week
+	var tmpRetAlarm retAlarms
+	decoder := json.NewDecoder(request.Body)
+
+	errDecode := decoder.Decode(&tmpRetAlarm)
+	fmt.Printf("%v", tmpRetAlarm.User_ID)
+	if errDecode != nil {
+		fmt.Println(errDecode)
+		respondWithError(writer, http.StatusBadRequest, "Invalid request payload")
+		return
+	}
+	
+	rows, err := a.DB.Query(
+		`SELECT * 
+		FROM alarms
+		WHERE user_id = $1`,
+		tmpRetAlarm.User_ID)
+
+	if err != nil {
+		fmt.Println("failure: ", err)
+		writer.Write([]byte("Something went wrong in DB process"))
+	} else {
+		defer rows.Close()
+		//need to json nonsense here
+		buf := new(bytes.Buffer)
+		newErr := json.NewEncoder(buf).Encode(rows)
+		if newErr != nil {
+			log.Fatal(newErr)
+		}
+		writer.Write(buf.Bytes())
+	}
+	
+
+
+	defer request.Body.Close()
+}
+func (a *App) updateAlarm(writer http.ResponseWriter, request *http.Request){
+	
+}
+func (a *App) deleteAlarm(writer http.ResponseWriter, request *http.Request){
+	
 }
 
 func (a *App) authenticationEndpoint(writer http.ResponseWriter, request *http.Request) {
@@ -199,6 +251,7 @@ func main() {
 	app.initializeApp()
 	app.router.HandleFunc("/api/v1/", sayHello).Methods("GET")
 	app.router.HandleFunc("/api/v1/createAlarm", app.createAlarm).Methods("POST")
+	app.router.HandleFunc("/api/v1/retrieveAlarms", app.retrieveAlarms).Methods("POST")
 	app.router.HandleFunc("/api/v1/createUser", app.createUser).Methods("POST")
 	c := cors.New(cors.Options{
 		AllowedOrigins:   []string{"*"},

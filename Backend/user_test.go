@@ -141,7 +141,9 @@ func TestCreateAlarm(t *testing.T){
 		}
 	})
 	t.Run("Bad Time", func(t *testing.T) {
-		jsonBody := []byte(`{"time": "202-27T17:43:35.668Z",
+		jsonBody := []byte(`{
+			"user_id": "83f18bdf-2e8f-4cd0-bfba-8dd0ec79aa97",
+			"time": "202-27T17:43:35.668Z",
 							 "days": {
 								"sunday": false, 
 								"monday": false, 
@@ -164,7 +166,9 @@ func TestCreateAlarm(t *testing.T){
 		}
 	})
 	t.Run("Bad Weekdays",func(t *testing.T) {
-		jsonBody := []byte(`{"time": "2023-02-27T17:43:35.668Z",
+		jsonBody := []byte(`{
+			"user_id": "83f18bdf-2e8f-4cd0-bfba-8dd0ec79aa97",
+			"time": "2023-02-27T17:43:35.668Z",
 							 "days": {
 								"sunday": false, 
 								"monday": false, 
@@ -187,7 +191,9 @@ func TestCreateAlarm(t *testing.T){
 		}
 	})
 	t.Run("Optimal Test Alarm", func(t *testing.T) {
-		jsonBody := []byte(`{"time": "2023-02-27T17:43:35.668Z",
+		jsonBody := []byte(`{
+							"user_id": "83f18bdf-2e8f-4cd0-bfba-8dd0ec79aa97",
+							"time": "2023-02-27T17:43:35.668Z",
 							 "days": {
 								"sunday": false, 
 								"monday": false, 
@@ -232,4 +238,21 @@ func TestCallNumberFail(t *testing.T){
 		}
 	})
 	
+}
+
+func TestRetreiveAlarm(t *testing.T){
+	t.Run("Basic Test",func(t *testing.T) {
+		jsonBody := []byte(`{"user_id": "83f18bdf-2e8f-4cd0-bfba-8dd0ec79aa97"}`)
+ 		bodyReader := bytes.NewReader(jsonBody)
+		app := &App{}
+		app.initializeApp()
+		request, _ := http.NewRequest(http.MethodPost, "/api/v1/retrieveAlarm", bodyReader)
+		response := httptest.NewRecorder()
+		app.retrieveAlarms(response, request)
+		got := response.Body.String();
+		want :=  "{\"error\":\"Invalid request payload\"}"
+		if got != want {
+			t.Errorf("response body is wrong, got %q want %q", got, want)
+		}
+	})
 }
