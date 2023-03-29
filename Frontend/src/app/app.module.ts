@@ -27,6 +27,9 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { AlarmComponent } from './alarm/alarm.component';
 import { MatCheckboxModule } from '@angular/material/checkbox'
 import {MatDatepickerModule} from '@angular/material/datepicker';
+import { MatDialogModule } from '@angular/material/dialog';
+import { TableFilteringExample } from './useralarms/useralarms.component';
+
 
 @NgModule({
   declarations: [
@@ -35,7 +38,8 @@ import {MatDatepickerModule} from '@angular/material/datepicker';
     TitleComponent,
     SignupComponent,
     HomeComponent,
-    AlarmComponent
+    AlarmComponent,
+    TableFilteringExample,
   ],
   imports: [
     BrowserModule,
@@ -62,8 +66,10 @@ import {MatDatepickerModule} from '@angular/material/datepicker';
     NgxMaterialTimepickerModule,
     MatCheckboxModule,
     MatDatepickerModule,
+    MatDialogModule,
   ],
   providers: [],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
+
