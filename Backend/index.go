@@ -353,6 +353,7 @@ func main() {
 	app.router.HandleFunc("/api/v1/updateAlarm", app.updateAlarm).Methods("POST")
 	app.router.HandleFunc("/api/v1/deleteAlarm", app.deleteAlarm).Methods("POST")
 	app.router.HandleFunc("/api/v1/createUser", app.createUser).Methods("POST")
+	app.router.HandleFunc("/api/v1/login", app.authenticationEndpoint).Methods("POST")
 	c := cors.New(cors.Options{
 		AllowedOrigins:   []string{"*"},
 		AllowCredentials: true,
