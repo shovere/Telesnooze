@@ -1,4 +1,4 @@
-import { SignupComponent } from "src/app/signup/signup.component";
+import { SignupComponent } from "../src/app/signup/signup.component";
 
 describe('signup.cy.ts', () => {
   it('can mount', () => {
@@ -30,6 +30,53 @@ describe('signup.cy.ts', () => {
     cy.get('.email-prompt > input').type(email);
     cy.get('.phone-prompt > input').type(phone);
   })
+
+
+  it('prevents invalid email submissions', () => {
+    cy.mount(SignupComponent);
+    const username = 'Allie Gator';
+    const email = 'agufl.edu';
+    const password = 'swamplover';
+    const phone = '0123456789';
+    cy.get('.user-prompt > input').type(username);
+    cy.get('.password-prompt > input').type(password);
+    cy.get('.password-confirm-prompt > input').type(password);
+    cy.get('.email-prompt > input').type(email);
+    cy.get('.phone-prompt > input').type(phone);
+    cy.get('button').should('be.disabled');
+  })
+
+  it('prevents invalid phone number submissions', () => {
+    cy.mount(SignupComponent);
+    const username = 'Allie Gator';
+    const email = 'agufl.edu';
+    const password = 'swamplover';
+    const phone = 'abcdefghasduihas';
+    cy.get('.user-prompt > input').type(username);
+    cy.get('.password-prompt > input').type(password);
+    cy.get('.password-confirm-prompt > input').type(password);
+    cy.get('.email-prompt > input').type(email);
+    cy.get('.phone-prompt > input').type(phone);
+    cy.get('button').should('be.disabled');
+  })
+
+
+  it('prevents non-matching passwords', () => {
+    cy.mount(SignupComponent);
+    const username = 'Allie Gator';
+    const email = 'agufl.edu';
+    const password = 'swamplover';
+    const confirmPassword = 'asiodjaosidjaosijdoasijd';
+    const phone = '1234567890';
+    cy.get('.user-prompt > input').type(username);
+    cy.get('.password-prompt > input').type(password);
+    cy.get('.password-confirm-prompt > input').type(confirmPassword);
+    cy.get('.email-prompt > input').type(email);
+    cy.get('.phone-prompt > input').type(phone);
+    cy.get('button').should('be.disabled');
+  })
+
+
 
   /*it('accepts button input', () => {
     cy.mount(SignupComponent);
