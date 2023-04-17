@@ -3,11 +3,28 @@
    bottom: 5%;
    left: 10%;
 }
-.alarmdaysactive {
-  
-
-}
 .prompt {
   font-size: 20px;
   color: #6F4B91;
 }
+
+.create-alarm {
+  position: relative;
+  left:  3%; 
+}
+
+.datepickerbutton {
+  position: relative; 
+  left: 1%; 
+  top: 3%; 
+}
+
+.alarm-button {
+  position: relative; 
+  left: 1%; 
+}
+
+h2{
+  color: blueviolet;
+}
+

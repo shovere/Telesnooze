@@ -1,15 +1,15 @@
-import { Component, ViewChild,} from '@angular/core';
+
+import { Component, ViewChild,  OnInit} from '@angular/core';
 import { MatTableDataSource } from '@angular/material/table';
 import { MatPaginator } from '@angular/material/paginator';
-import { ApiCallServceService } from './api-call-servce.service';
+import { ApiCallService } from './api-call-servce.service';
+
 import { MatTable } from '@angular/material/table';
 import { alarms } from './api-call-servce.service';
 import { HttpClient } from '@angular/common/http';
 
 
-
 const ELEMENT_DATA: alarms[] = [];
-
 
 @Component({
   selector: 'app-useralarm',
@@ -17,7 +17,17 @@ const ELEMENT_DATA: alarms[] = [];
   templateUrl: 'useralarms.component.html',
 })
 
-export class TableFilteringExample {
+
+export class TableFilteringExample implements OnInit {
+
+  data: any; 
+  private url : string = "http://localhost:8123/api/v1/retrieveAlarms";
+
+ ngOnInit(): void {
+    this.apicallservice.retrieveAlarms().subscribe(data => {
+        this.data = data;
+    })
+}
 
 
     columnsToDisplay: string[] = ['Alarm_ID', 'Days','Time',];
@@ -36,7 +46,8 @@ export class TableFilteringExample {
 
   @ViewChild(MatTable) myTable!: MatTable<alarms>;
 
-  constructor(private apicallservice: ApiCallServceService, 
+  constructor(private apicallservice: ApiCallService, 
+
               private http: HttpClient, ) {
 
     

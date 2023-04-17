@@ -29,7 +29,7 @@ import { MatCheckboxModule } from '@angular/material/checkbox'
 import {MatDatepickerModule} from '@angular/material/datepicker';
 import { MatDialogModule } from '@angular/material/dialog';
 import { TableFilteringExample } from './useralarms/useralarms.component';
-
+import { TestComponent } from './test/test.component';
 
 @NgModule({
   declarations: [
@@ -40,6 +40,7 @@ import { TableFilteringExample } from './useralarms/useralarms.component';
     HomeComponent,
     AlarmComponent,
     TableFilteringExample,
+    TestComponent,
   ],
   imports: [
     BrowserModule,
