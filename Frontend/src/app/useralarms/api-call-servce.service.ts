@@ -2,7 +2,6 @@ import { HttpClient, HttpHeaders } from "@angular/common/http";
 import { Injectable } from "@angular/core";
 import { Data } from "@angular/router";
 import { Observable } from "rxjs";
-import { Country } from "./country";
 
 export interface alarms {
     Alarm_ID: number;
@@ -17,8 +16,8 @@ export interface alarms {
 
 export class ApiCallServceService {
     apiUrlRetrieve = 'http://localhost:8123/api/v1/retrieveAlarms"';
-    apiUrlDelete = 'http://localhost:8123/api/v1/deleteAlarm'
-  
+    apiUrlDelete = 'http://localhost:8123/api/v1/deleteAlarm';
+    apiUrlUpdate = 'http://localhost:8123/api/v1/updateAlarm';
 
 
     constructor(private httpClient: HttpClient) { }
@@ -32,6 +31,10 @@ export class ApiCallServceService {
     deleteAlarm(Alarm_ID: number) {
         return this.httpClient.delete(`${this.apiUrlDelete}/${Alarm_ID}`);
       }
+
+    updateAlarm(Alarm_ID: number) {
+        
+    }
 
 
 }
