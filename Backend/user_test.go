@@ -248,7 +248,7 @@ func TestRetreiveAlarms(t *testing.T){
  		bodyReader := bytes.NewReader(jsonBody)
 		app := &App{}
 		app.initializeApp()
-		request, _ := http.NewRequest(http.MethodPost, "/api/v1/retrieveAlarm", bodyReader)
+		request, _ := http.NewRequest(http.MethodPost, "/api/v1/retrieveAlarms", bodyReader)
 		response := httptest.NewRecorder()
 	
 		app.retrieveAlarms(response, request)
@@ -277,7 +277,7 @@ func TestRetreiveAlarms(t *testing.T){
  		bodyReader := bytes.NewReader(jsonBody)
 		app := &App{}
 		app.initializeApp()
-		request, _ := http.NewRequest(http.MethodPost, "/api/v1/retrieveAlarm", bodyReader)
+		request, _ := http.NewRequest(http.MethodPost, "/api/v1/retrieveAlarms", bodyReader)
 		response := httptest.NewRecorder()
 	
 		app.retrieveAlarms(response, request)

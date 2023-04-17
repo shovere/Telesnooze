@@ -231,9 +231,6 @@ func (a *App) retrieveAlarms(writer http.ResponseWriter, request *http.Request){
 		}
 		writer.Write(buf.Bytes())
 	}
-	
-
-
 	defer request.Body.Close()
 }
 func (a *App) updateAlarm(writer http.ResponseWriter, request *http.Request){
