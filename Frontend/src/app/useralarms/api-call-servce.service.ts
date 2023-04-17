@@ -9,6 +9,7 @@ export interface alarms {
     Time: string;
 }
 
+
 @Injectable({
     providedIn: 'root'
 })
@@ -21,13 +22,16 @@ export class ApiCallService {
 
     retrieveAlarms(): Observable<alarms[]> {
         return this.httpClient.post<alarms[]>(this.apiUrlRetrieve, {});
+
     }
 
     deleteAlarm(Alarm_ID: number) {
         return this.httpClient.delete(`${this.apiUrlDelete}/${Alarm_ID}`);
+
     }
 
     updateAlarm(Alarm_ID: number) {
         // Add code to update alarm here
     }
 }
+

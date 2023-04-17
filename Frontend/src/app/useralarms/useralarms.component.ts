@@ -1,10 +1,13 @@
+
 import { Component, ViewChild,  OnInit} from '@angular/core';
 import { MatTableDataSource } from '@angular/material/table';
 import { MatPaginator } from '@angular/material/paginator';
 import { ApiCallService } from './api-call-servce.service';
+
 import { MatTable } from '@angular/material/table';
 import { alarms } from './api-call-servce.service';
 import { HttpClient } from '@angular/common/http';
+
 
 const ELEMENT_DATA: alarms[] = [];
 
@@ -13,6 +16,7 @@ const ELEMENT_DATA: alarms[] = [];
   styleUrls: ['useralarms.component.css'],
   templateUrl: 'useralarms.component.html',
 })
+
 
 export class TableFilteringExample implements OnInit {
 
@@ -24,6 +28,7 @@ export class TableFilteringExample implements OnInit {
         this.data = data;
     })
 }
+
 
     columnsToDisplay: string[] = ['Alarm_ID', 'Days','Time',];
     apiUrlDelete = 'http://localhost:8123/api/v1/deleteAlarm'
@@ -42,6 +47,7 @@ export class TableFilteringExample implements OnInit {
   @ViewChild(MatTable) myTable!: MatTable<alarms>;
 
   constructor(private apicallservice: ApiCallService, 
+
               private http: HttpClient, ) {
 
     

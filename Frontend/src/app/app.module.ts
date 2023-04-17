@@ -31,7 +31,6 @@ import { MatDialogModule } from '@angular/material/dialog';
 import { TableFilteringExample } from './useralarms/useralarms.component';
 import { TestComponent } from './test/test.component';
 
-
 @NgModule({
   declarations: [
     AppComponent,
