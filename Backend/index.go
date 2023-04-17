@@ -9,11 +9,13 @@ import (
 	"log"
 	"net/http"
 	"reflect"
+	"time"
 
 	"github.com/google/uuid"
 	"github.com/gorilla/mux"
 	_ "github.com/mattn/go-sqlite3"
 	"github.com/relvacode/iso8601"
+	"github.com/robfig/cron/v3"
 	"github.com/rs/cors"
 )
 
@@ -45,6 +47,7 @@ type retAlarms struct {
 type App struct {
 	router *mux.Router
 	DB     *sql.DB
+	cronDaemon *cron.Cron
 }
 
 func hashPassword(password string) []byte {
@@ -126,7 +129,41 @@ func (a *App) initializeApp() {
 	}
 	a.DB = db
 	a.router = mux.NewRouter()
+	a.cronDaemon = cron.New()
+
 }
+
+func (a *App) initCronDaily(){
+	currentWeekday := time.Now().Weekday()
+	query := fmt.Sprintf(`SELECT *
+						FROM alarms
+						WHERE %s = 1`, currentWeekday)			
+	rows, err := a.DB.Query(query)
+	if err != nil {
+		fmt.Println("failure: ", err)
+	} else {
+		defer rows.Close()
+		for rows.Next() {
+			var al alarm
+			err := rows.Scan(&al.Alarm_ID, 
+					&al.Time, 
+					&al.Week.Sunday, 
+					&al.Week.Monday, 
+					&al.Week.Tuesday,
+					&al.Week.Wednesday, 
+					&al.Week.Thursday, 
+					&al.Week.Friday, 
+					&al.Week.Saturday, 
+					&al.User_ID)
+			if err != nil {
+				log.Fatal(err)
+			}
+			//TODO ADD CRONJOBS
+			//a.cronDaemon.AddFunc()
+		}
+	}
+}
+
 
 func sayHello(writer http.ResponseWriter, request *http.Request) {
 	fmt.Println("hello new user")
