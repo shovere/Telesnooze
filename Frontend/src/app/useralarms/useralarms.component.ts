@@ -22,8 +22,6 @@ export class TableFilteringExample {
 
     columnsToDisplay: string[] = ['Alarm_ID', 'Days','Time',];
     apiUrlDelete = 'http://localhost:8123/api/v1/deleteAlarm'
-  
-  
 
   
   #title = 'mouse-hover';
@@ -51,14 +49,28 @@ export class TableFilteringExample {
 
   } 
 
-  removeItem(Alarm_ID: number): void {
-    const url = `${this.apiUrlDelete}/${Alarm_ID}`;
-    this.http.delete(url).subscribe(response => {
-      console.log('sucess')
-    }, error => {
-      console.log(error)
-    });
+  deleteAlarm(Alarm_ID: number) {
+    this.http.delete(`http://localhost:8123/api/v1/deleteAlarm/${Alarm_ID}`).subscribe(
+      () => {
+        this.dataSource = this.dataSource.filter((element) => element.Alarm_ID !== Alarm_ID);
+        this.myTable.renderRows();
+      },
+      (error) => {
+        console.error(error);
+        alert('Failed to delete the element.');
+      }
+      );
   }
+
+
+
+  
+
+  }
+
+
+
+
 
 
   /*
@@ -78,12 +90,6 @@ export class TableFilteringExample {
 
 
 
-
-
-  
-
-
-}
 
 
 
