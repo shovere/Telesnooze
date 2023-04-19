@@ -9,13 +9,16 @@ import (
 	"log"
 	"net/http"
 	"reflect"
+
+	"strconv"
+
 	"time"
 
+	"github.com/elgs/cron"
 	"github.com/google/uuid"
 	"github.com/gorilla/mux"
 	_ "github.com/mattn/go-sqlite3"
 	"github.com/relvacode/iso8601"
-	"github.com/robfig/cron/v3"
 	"github.com/rs/cors"
 )
 
@@ -28,6 +31,7 @@ type account struct {
 type alarm struct {
 	User_ID string `json:"user_id"`
 	Time string `json:"time"`
+	Cron_ID int
 	Alarm_ID string 
 	Week struct {
 		Sunday    bool `json:"sunday"`
@@ -125,7 +129,7 @@ func respondWithJSON(w http.ResponseWriter, code int, payload interface{}) {
 func (a *App) initializeApp() {
 	db, err := sql.Open("sqlite3", "telesnooze.db")
 	if err != nil {
-		panic("failed to connect database")
+		fmt.Println("failed to connect database")
 	}
 	a.DB = db
 	a.router = mux.NewRouter()
@@ -133,15 +137,13 @@ func (a *App) initializeApp() {
 
 }
 
-func (a *App) initCronDaily(){
-	currentWeekday := time.Now().Weekday()
-	query := fmt.Sprintf(`SELECT *
-						FROM alarms
-						WHERE %s = 1`, currentWeekday)			
-	rows, err := a.DB.Query(query)
+func (a *App) initCron(){
+	rows, err := a.DB.Query(`SELECT *
+				FROM alarms`)
 	if err != nil {
 		fmt.Println("failure: ", err)
 	} else {
+		var cronAlarms []alarm;
 		defer rows.Close()
 		for rows.Next() {
 			var al alarm
@@ -154,15 +156,72 @@ func (a *App) initCronDaily(){
 					&al.Week.Thursday, 
 					&al.Week.Friday, 
 					&al.Week.Saturday, 
-					&al.User_ID)
+					&al.User_ID, 
+					&al.Cron_ID)
 			if err != nil {
-				log.Fatal(err)
+				fmt.Println("error in init", err)
 			}
-			//TODO ADD CRONJOBS
-			//a.cronDaemon.AddFunc()
+			cronAlarms = append(cronAlarms, al)
 		}
+		for i := 0; i < len(cronAlarms); i++ {
+			a.createCronFromAlarm(cronAlarms[i])
+		}
+		
 	}
 }
+
+func (a *App) createCronFromAlarm(al alarm){
+	weekString := "";
+	v := reflect.ValueOf(al.Week)
+
+	for i := 0; i < v.NumField(); i++ {
+		if v.Field(i).Interface() == true {
+			if(weekString == ""){
+				weekString += strconv.Itoa(i)
+			}else {
+				 weekString +=  "," + strconv.Itoa(i) 
+			}
+		}
+	}
+	
+	date, err := time.Parse(time.RFC3339, al.Time)
+	
+  
+	if err != nil {
+		fmt.Println("create cron alarm", err)
+		return
+	} else {
+
+		var cronString = fmt.Sprintf(`0 %d %d ? * %s`, date.Minute(), date.Hour(), weekString)
+		fmt.Println(cronString)
+		cronID,err := a.cronDaemon.AddFunc(cronString, func() {
+			fmt.Println("this is where we would call the user")
+			//normally we would just query the user's phone number and put it here
+			//but because we don't have a full version of twilio setup we just call my phone
+			callNumber("+16035689902")
+		})
+		if(err != nil){
+			fmt.Println(err)
+		}
+		if(al.Cron_ID != -1){
+			a.cronDaemon.RemoveFunc(al.Cron_ID)
+		}
+		fmt.Println(cronID, al.Alarm_ID)
+		res, err := a.DB.Exec(
+			`UPDATE alarms
+			 SET cron_id = $1
+			 WHERE id = $2`,
+			cronID, al.Alarm_ID)
+		if err != nil {
+			fmt.Println("error in create cron alarm", err)
+		}
+		
+		fmt.Println(res)
+	}
+}
+
+
+
 
 
 func sayHello(writer http.ResponseWriter, request *http.Request) {
@@ -306,7 +365,7 @@ func (a *App) updateAlarm(writer http.ResponseWriter, request *http.Request){
 				wednesday = $6, 
 				thursday = $7, 
 				friday = $8, 
-				saturday = $9
+				saturday = $9, 
 			 WHERE id = $1 AND user_id = $10`,
 			alarm.Alarm_ID, 
 			alarm.Time, 
@@ -322,6 +381,7 @@ func (a *App) updateAlarm(writer http.ResponseWriter, request *http.Request){
 			fmt.Println("failure: ", err)
 			writer.Write([]byte("Something went wrong in DB process"))
 		} else {
+			a.createCronFromAlarm(alarm)
 			writer.Write([]byte("Success"))
 		}
 	}
@@ -381,6 +441,7 @@ func (a *App) authenticationEndpoint(writer http.ResponseWriter, request *http.R
 func main() {
 	app := &App{}
 	app.initializeApp()
+	app.initCron()
 	app.router.HandleFunc("/api/v1/", sayHello).Methods("GET")
 	app.router.HandleFunc("/api/v1/createAlarm", app.createAlarm).Methods("POST")
 	app.router.HandleFunc("/api/v1/retrieveAlarms", app.retrieveAlarms).Methods("POST")

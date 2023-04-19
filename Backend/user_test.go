@@ -195,15 +195,15 @@ func TestCreateAlarm(t *testing.T){
 	t.Run("Optimal Test Alarm", func(t *testing.T) {
 		jsonBody := []byte(`{
 							"user_id": "83f18bdf-2e8f-4cd0-bfba-8dd0ec79aa97",
-							"time": "2023-02-27T17:43:35.668Z",
+							"time": "2023-02-27T14:26:35.668Z",
 							 "days": {
 								"sunday": false, 
-								"monday": false, 
+								"monday": true, 
 								"tuesday": true, 
-								"wednesday": false, 
-								"thursday": false, 
-								"friday": false, 
-								"saturday": false
+								"wednesday": true, 
+								"thursday": true, 
+								"friday": true, 
+								"saturday": true
 							 }}`)
  		bodyReader := bytes.NewReader(jsonBody)
 		app := &App{}
