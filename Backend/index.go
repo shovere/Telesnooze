@@ -335,8 +335,8 @@ func (a *App) authenticationEndpoint(writer http.ResponseWriter, request *http.R
 	var id string
 	err := a.DB.QueryRow("SELECT id FROM users WHERE username = $3 AND password = $4", account.Username, hashedPassword).Scan(&id)
 	if err != nil {
+		respondWithError(writer, http.StatusBadRequest, "Problem: Username or password is incorrect")
 		fmt.Println(err)
-		writer.Write([]byte("Problem: Username or password is incorrect"))
 	} else {
 		writer.Write([]byte("Successful find"))
 	}

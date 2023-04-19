@@ -10,8 +10,13 @@
     <mat-label>Password</mat-label>
     <input matInput placeholder="Enter your password" value="" name="password" type="password" [(ngModel)]="password">
   </mat-form-field>
-  <button class="login-button" [routerLink] ="[{ outlets: { home: ['home'] } }]" mat-raised-button color="primary" (click)="submit()">Submit</button>
-  <span class="success-message" *ngIf="show"> <button mat-button color="primary">Login successful</button></span>
-  <span class="fail-message" *ngif="show"> <button mat-button color="red">Username or Password are incorrect</button></span>
+  <button class="login-button"  mat-raised-button color="primary" (click)="submit()">Submit</button>
+  <span class="success-message" *ngIf="isSuccess"> <button mat-button color="primary">Login successful</button></span>
+  <span class="fail-message" *ngif="isError"> <button mat-button color="red">Username or Password are incorrect</button></span>
+
+  <span class="load-message" *ngIf="isLoading"> <button mat-button color="primary">Processing...</button></span>
+
+
+
   <p class="signup_redirect"><a [routerLink]="[{ outlets: { signup: ['signup'] } }]">New to Telesnooze? Sign up here.</a></p>
 </form>

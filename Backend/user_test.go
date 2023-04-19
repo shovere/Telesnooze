@@ -33,7 +33,7 @@ func TestAuthenticateLogin(t *testing.T) {
 		response := httptest.NewRecorder()
 		app.authenticationEndpoint(response, request)
 		got := response.Body.String();
-		want := "Problem: Username or password is incorrect"
+		want := "{\"error\":\"Problem: Username or password is incorrect\"}"
 		if got != want {
 			t.Errorf("response body is wrong, got %q want %q", got, want)
 		}

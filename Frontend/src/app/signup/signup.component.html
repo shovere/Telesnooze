@@ -1,37 +1,49 @@
 <app-title></app-title>
-<form class="signup-form">
+<form class="signup-form" [formGroup]="signupForm">
     <h1 class="signup-title">Sign Up</h1>
-
+  
     <mat-form-field class="email-prompt" appearance="fill">
       <mat-label>Email</mat-label>
-      <input matInput placeholder="Enter your email" value="" name="email" type="email" [(ngModel)]="email">
+      <input matInput placeholder="Enter your email" value="" name="email" type="email" [(ngModel)]="email" formControlName="emailControl">
+      <mat-error class="emailerror" *ngIf= "signupForm.get('emailControl')">{{checkEmail()}}</mat-error>
     </mat-form-field>
 
     <mat-form-field class="user-prompt" appearance="fill">
       <mat-label>User Name</mat-label>
-      <input matInput placeholder="Enter your name" name="usename"
-             [(ngModel)]="username">
+      <input matInput placeholder="Enter your name" name="username" [(ngModel)]="username" formControlName="userControl">
+      <mat-error class="usererror" *ngIf="signupForm.get('userControl')?.hasError('required')">You must enter a value</mat-error>
     </mat-form-field>
 
     <mat-form-field class="password-prompt" appearance="fill">
       <mat-label>Password</mat-label>
-      <input matInput placeholder="Enter your password" value="" name="password" type="password" [(ngModel)]="password">
+      <input matInput placeholder="Enter your password" value="" name="password" type="password" [(ngModel)]="password" formControlName="passwordControl" >
+      <mat-error class="pwerror" *ngIf="signupForm.get('passwordControl')?.hasError('required')">You must enter a value</mat-error>
     </mat-form-field>
 
-    <mat-form-field class="password-confirm-prompt" appearance="fill">
+    <mat-form-field class="password-confirm-prompt" appearance="fill" [ngClass]="{'passwords-not-matching': signupForm.errors?.['passwordsMismatch']}">
       <mat-label>Confirm Password</mat-label>
-      <input matInput placeholder="Confirm Password" value="" name="passwordconfirm" type="password" [(ngModel)]="password">
+      <input matInput placeholder="Confirm Password" value="" name="passwordconfirm" type="password" [(ngModel)]="passwordconfirm" formControlName="confirmPasswordControl" >
+      <mat-error class="pwcerror" *ngIf="signupForm.get('passwordControl')?.hasError('required')">You must enter a value</mat-error>
+      
+      <mat-hint class="pwmismatcherror"*ngIf="signupForm.errors?.['passwordMismatch'] && !signupForm.get('passwordControl')?.hasError('required')">Passwords must match</mat-hint>
     </mat-form-field>
 
     <mat-form-field class="phone-prompt" appearance="fill">
       <mat-label>Phone Number</mat-label>
       <mat-icon matSuffix>phone</mat-icon>
-      <input matInput placeholder="Phone Number" value="" name="phone" type="phone" [(ngModel)]="phone">
+      <input matInput placeholder="Phone Number" value="" name="phone" type="phone" [(ngModel)]="phone" formControlName="phoneControl">
+      <mat-error *ngIf="signupForm.get('phoneControl')?.hasError('required')">You must enter a value</mat-error>
+
+      <mat-error *ngIf="signupForm.get('phoneControl')?.hasError('pattern')">Invalid Number</mat-error>
+
     </mat-form-field>
 
-    <button class="signup-button" mat-raised-button color="primary" (click)="submit()">Submit</button>
-    <span class="success-message" *ngIf="show"> <button mat-button color="primary">Sign in successful</button></span>
-    <span class="fail-message" *ngif="show"> <button mat-button color="red">Username or Password are incorrect</button></span>
+    <button class="signup-button" mat-raised-button color="primary" (click)="submit()" disabled = "{{submissionNotReady()}}">Submit</button>
+    <span class="load-message" *ngIf="isLoading"> <button mat-button color="primary">Processing...</button></span>
+    <span class="success-message" *ngIf="isSuccess"> <button mat-button color="primary">Sign in successful</button></span>
+    <span class="fail-message" *ngIf="isError"> <button mat-button color="primary">Sign in failed</button></span>
+
+
     <p class="login_return"><a [routerLink]="['']">Back to Login</a></p>
   </form>
 
