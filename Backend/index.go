@@ -14,7 +14,9 @@ import (
 
 	"time"
 
-	"github.com/elgs/cron"
+	"github.com/robfig/cron/v3"
+
+	//"github.com/elgs/cron"
 	"github.com/google/uuid"
 	"github.com/gorilla/mux"
 	_ "github.com/mattn/go-sqlite3"
@@ -28,10 +30,15 @@ type account struct {
 	Password string `json:"password"`
 	Phone    string `json:"phone"`
 }
+
+type cronHolder struct {
+	alarm_id string
+	cron *cron.Cron
+}
+
 type alarm struct {
 	User_ID string `json:"user_id"`
 	Time string `json:"time"`
-	Cron_ID int
 	Alarm_ID string 
 	Week struct {
 		Sunday    bool `json:"sunday"`
@@ -51,7 +58,7 @@ type retAlarms struct {
 type App struct {
 	router *mux.Router
 	DB     *sql.DB
-	cronDaemon *cron.Cron
+	cronDaemon []cronHolder
 }
 
 func hashPassword(password string) []byte {
@@ -133,8 +140,6 @@ func (a *App) initializeApp() {
 	}
 	a.DB = db
 	a.router = mux.NewRouter()
-	a.cronDaemon = cron.New()
-
 }
 
 func (a *App) initCron(){
@@ -156,8 +161,7 @@ func (a *App) initCron(){
 					&al.Week.Thursday, 
 					&al.Week.Friday, 
 					&al.Week.Saturday, 
-					&al.User_ID, 
-					&al.Cron_ID)
+					&al.User_ID)
 			if err != nil {
 				fmt.Println("error in init", err)
 			}
@@ -166,8 +170,8 @@ func (a *App) initCron(){
 		for i := 0; i < len(cronAlarms); i++ {
 			a.createCronFromAlarm(cronAlarms[i])
 		}
-		
 	}
+
 }
 
 func (a *App) createCronFromAlarm(al alarm){
@@ -191,32 +195,41 @@ func (a *App) createCronFromAlarm(al alarm){
 		fmt.Println("create cron alarm", err)
 		return
 	} else {
-
-		var cronString = fmt.Sprintf(`0 %d %d ? * %s`, date.Minute(), date.Hour(), weekString)
+		updateCron := false;
+		newCron := cron.New()
+		var foundCron cronHolder
+		for i:=0; i < len(a.cronDaemon); i++ {
+			if(a.cronDaemon[i].alarm_id == al.Alarm_ID) {
+				foundCron= a.cronDaemon[i]
+				updateCron = true;
+				break
+			}
+		}
+	
+		
+		
+		var cronString = fmt.Sprintf(`%d %d ? * %s`, date.Minute(), date.Hour(), weekString)
 		fmt.Println(cronString)
-		cronID,err := a.cronDaemon.AddFunc(cronString, func() {
-			fmt.Println("this is where we would call the user")
+		cronID,err := newCron.AddFunc(cronString, func() {
+			fmt.Println("this is where we would call the user", al.Alarm_ID)
 			//normally we would just query the user's phone number and put it here
 			//but because we don't have a full version of twilio setup we just call my phone
-			callNumber("+16035689902")
+			//callNumber("+16035689902")
 		})
 		if(err != nil){
 			fmt.Println(err)
 		}
-		if(al.Cron_ID != -1){
-			a.cronDaemon.RemoveFunc(al.Cron_ID)
+		if(updateCron){
+			foundCron.cron.Stop()
+			foundCron.cron = newCron
+			foundCron.cron.Start()
+		}else {
+			foundCron.alarm_id = al.Alarm_ID
+			foundCron.cron = newCron
+			foundCron.cron.Start()
+			a.cronDaemon = append(a.cronDaemon, foundCron)
 		}
-		fmt.Println(cronID, al.Alarm_ID)
-		res, err := a.DB.Exec(
-			`UPDATE alarms
-			 SET cron_id = $1
-			 WHERE id = $2`,
-			cronID, al.Alarm_ID)
-		if err != nil {
-			fmt.Println("error in create cron alarm", err)
-		}
-		
-		fmt.Println(res)
+		fmt.Println(cronID, al.Alarm_ID)		
 	}
 }
 
@@ -271,6 +284,8 @@ func (a *App) createAlarm(writer http.ResponseWriter, request *http.Request) {
 		} else {
 			writer.Write([]byte("Success"))
 		}
+		a.createCronFromAlarm(alarm)
+	
 	}
 
 	defer request.Body.Close()
@@ -356,7 +371,7 @@ func (a *App) updateAlarm(writer http.ResponseWriter, request *http.Request){
 		writer.Write([]byte("Problem: Week needs at least one true value OR JSON be malformed"))
 
 	} else {
-		_, err := a.DB.Exec(
+		res, err := a.DB.Exec(
 			`UPDATE alarms
 			 SET time = $2, 
 				sunday = $3, 
@@ -365,7 +380,7 @@ func (a *App) updateAlarm(writer http.ResponseWriter, request *http.Request){
 				wednesday = $6, 
 				thursday = $7, 
 				friday = $8, 
-				saturday = $9, 
+				saturday = $9
 			 WHERE id = $1 AND user_id = $10`,
 			alarm.Alarm_ID, 
 			alarm.Time, 
@@ -381,7 +396,9 @@ func (a *App) updateAlarm(writer http.ResponseWriter, request *http.Request){
 			fmt.Println("failure: ", err)
 			writer.Write([]byte("Something went wrong in DB process"))
 		} else {
+			fmt.Println("THIS IS AN ALARM", alarm.User_ID, alarm.Alarm_ID, 	alarm.Time,res)
 			a.createCronFromAlarm(alarm)
+		
 			writer.Write([]byte("Success"))
 		}
 	}
@@ -456,4 +473,5 @@ func main() {
 	handler := c.Handler(app.router)
 	fmt.Println("Server at 8123")
 	log.Fatal(http.ListenAndServe(":8123", handler))
+
 }
