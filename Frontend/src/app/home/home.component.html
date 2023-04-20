@@ -1,20 +1,12 @@
-<header class="home-header">Hello, /user/</header>
+<header class="home-header">Hello, /user/
+  <button class="logout-button" mat-raised-button color="accent" (click)="null">Logout</button>
+</header>
 <mat-tab-group class="selection" animationDuration="0ms" mat-stretch-tabs="false" dynamicHeight="true">
-  <mat-tab label="Your Stats">
-    <mat-progress-bar mode="determinate" value="40" class="percentage-correct">
-    </mat-progress-bar>
-
-    <p class="percentage-text">40% Correct</p>
-
-
-  </mat-tab>
   <mat-tab label="Configure Dates">
     <app-alarm class="alarm"></app-alarm>
   </mat-tab>
 
-
-
-
-
-  <mat-tab label="Customize Questions">Content 3</mat-tab>
+  <mat-tab label="Your Alarms">
+    <app-useralarm></app-useralarm>
+  </mat-tab>
 </mat-tab-group>

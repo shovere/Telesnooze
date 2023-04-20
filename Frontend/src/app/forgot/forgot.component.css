@@ -1,0 +1,45 @@
+.title_header {
+    padding: 60px;
+    text-align: center;
+    background: #6F4B91;
+    color: white;
+    font-size: 40px;
+    border-bottom: 5px solid white;
+  }
+  .forgot-form {
+    width: 300px;
+    height: 350px;
+    padding: 32px;
+    background-color: white;
+    box-shadow: 4px 4px 4px 4px rgba(0, 0, 0, 0.1);
+    justify-content: center;
+    align-items: center;
+    align-self: center;
+    position: absolute;
+    left: 40%;
+    top: 25%;
+  }
+  .user-prompt {
+    width: 100%;
+  }
+  .password-prompt {
+    width: 100%;
+  }
+  .phone-prompt{
+    width:100%;
+  }
+  .login_return {
+    position: relative;
+    top: 5%;
+  }
+  .login_return a {
+    text-decoration: none;
+    color: grey;
+   }
+  .login_return a:hover {
+    text-decoration: underline;
+  }
+  
+  .login_return a:active {
+    text-decoration: underline;
+  }
