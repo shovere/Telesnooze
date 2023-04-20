@@ -6,6 +6,7 @@
 .prompt {
   font-size: 20px;
   color: #6F4B91;
+  top: 10px; 
 }
 
 .create-alarm {
@@ -28,3 +29,19 @@ h2{
   color: blueviolet;
 }
 
+.alarm-prompt {
+  position: relative; 
+  left: 50px; 
+}
+
+.time-prompt {
+  font-size: 20px;
+  color: #6F4B91;
+}
+
+.timepicker {
+  bottom: 250px; 
+  left: 50px; 
+  position: fixed; 
+
+}

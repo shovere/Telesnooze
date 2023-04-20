@@ -1,7 +1,7 @@
 import { Component, ViewChild, OnInit } from '@angular/core';
 import { MatTableDataSource } from '@angular/material/table';
 import { MatPaginator } from '@angular/material/paginator';
-import { ApiCallService, alarms } from './api-call-service.service';
+import { ApiCallService, alarms } from './api-call-servce.service';
 import { HttpClient } from '@angular/common/http';
 import { MatTable } from '@angular/material/table';
 import { Observable } from 'rxjs';
@@ -39,6 +39,7 @@ export class TableFilteringExample implements OnInit {
   constructor(
     private apicallservice: ApiCallService,
     private http: HttpClient,
+    private snackBar: MatSnackBar
   ) { }
 
   ngOnInit() {

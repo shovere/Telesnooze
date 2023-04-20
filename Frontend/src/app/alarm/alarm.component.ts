@@ -2,9 +2,9 @@ import { Component, OnInit } from '@angular/core';
 import { Form, FormBuilder } from '@angular/forms';
 import { FormGroup, FormControl } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
-
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
+import { MatCheckboxModule } from '@angular/material/checkbox';
 
 @Component({
   selector: 'app-alarm',
