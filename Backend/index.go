@@ -214,7 +214,7 @@ func (a *App) createCronFromAlarm(al alarm){
 			fmt.Println("this is where we would call the user", al.Alarm_ID)
 			//normally we would just query the user's phone number and put it here
 			//but because we don't have a full version of twilio setup we just call my phone
-			//callNumber("+16035689902")
+			callNumber("+16035689902")
 		})
 		if(err != nil){
 			fmt.Println(err)
