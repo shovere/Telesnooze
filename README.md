@@ -1,5 +1,17 @@
 # Telesnooze by Group 34
 
+## Requirements for running 
+- an recent version of the node package manager (npm)
+- support for go-lang
+
+## steps for running
+- clone the repo from github
+- cd into frontend directory and use "npm i" to install all necessary frontend node packages
+- cd into backend directory and use "go get" all 
+- use npm run start in frontend directory to start frontend and go to http://localhost:4200/
+- use go run . in backend directory to package and run the main package, which starts the server instance
+- have fun!
+
 ### Description:
 Telesnooze is a web app that will act as a wake up call service. The user can set dates/times to receive a call, 
 set snooze paramaters, and set custom questions/codes. Each user will have a profile that keeps track of their data
