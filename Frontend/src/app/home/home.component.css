@@ -29,6 +29,10 @@
 .alarm {
   top: 5%;
   position: relative;
-  
+}
+.logout-button{
+  position: relative;
+  left : 90%;
+
 
 }
