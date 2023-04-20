@@ -9,6 +9,65 @@ import (
 	"testing"
 )
 
+func TestForgotPassword(t *testing.T) {
+	t.Run("Password Change", func(t *testing.T) {
+		jsonBody := []byte(`{"username": "Sean", "phone": "9999999999", "password": "NewPassword"}`)
+		bodyReader := bytes.NewReader(jsonBody)
+		app := &App{}
+		app.initializeApp()
+		request, _ := http.NewRequest(http.MethodPost, "/api/v1/forgotPassword", bodyReader)
+		response := httptest.NewRecorder()
+		app.forgotPassword(response, request)
+		got := response.Body.String();
+		want := "Password successfully updated"
+		if got != want {
+			t.Errorf("response body is wrong, got %q want %q", got, want)
+		}
+	})
+	t.Run("Account Not Found", func(t *testing.T) {
+		jsonBody := []byte(`{"username": "ycvuytchjmgvhjgv", "phone": "9999999999", "password": "erjnlirnle"}`)
+		bodyReader := bytes.NewReader(jsonBody)
+		app := &App{}
+		app.initializeApp()
+		request, _ := http.NewRequest(http.MethodPost, "/api/v1/forgotPassword", bodyReader)
+		response := httptest.NewRecorder()
+		app.forgotPassword(response, request)
+		got := response.Body.String();
+		want := "{\"error\":\"Account not found\"}"
+		if got != want {
+			t.Errorf("response body is wrong, got %q want %q", got, want)
+		}
+	})
+	t.Run("Empty Fields", func(t *testing.T) {
+		jsonBody := []byte(`{"username": "", "phone": "9999999999", "password": ""}`)
+		bodyReader := bytes.NewReader(jsonBody)
+		app := &App{}
+		app.initializeApp()
+		request, _ := http.NewRequest(http.MethodPost, "/api/v1/forgotPassword", bodyReader)
+		response := httptest.NewRecorder()
+		app.forgotPassword(response, request)
+		got := response.Body.String();
+		want := "{\"error\":\"Missing required field(s)\"}"
+		if got != want {
+			t.Errorf("response body is wrong, got %q want %q", got, want)
+		}
+	})
+	t.Run("Password -- ASCII Only", func(t *testing.T) {
+		jsonBody := []byte(`{"username": "Sean", "phone": "9999999999", "password": "£"}`)
+		bodyReader := bytes.NewReader(jsonBody)
+		app := &App{}
+		app.initializeApp()
+		request, _ := http.NewRequest(http.MethodPost, "/api/v1/forgotPassword", bodyReader)
+		response := httptest.NewRecorder()
+		app.forgotPassword(response, request)
+		got := response.Body.String();
+		want := "{\"error\":\"Problem: Password must only contain ASCII characters\"}"
+		if got != want {
+			t.Errorf("response body is wrong, got %q want %q", got, want)
+		}
+	})
+}
+
 func TestAuthenticateLogin(t *testing.T) {
 	t.Run("Authenticating Login", func(t *testing.T) {
 		jsonBody := []byte(`{"username": "Sean", "password": "Hernandez"}`)
@@ -33,7 +92,7 @@ func TestAuthenticateLogin(t *testing.T) {
 		response := httptest.NewRecorder()
 		app.authenticationEndpoint(response, request)
 		got := response.Body.String();
-		want := "Problem: Username or password is incorrect"
+		want := "{\"error\":\"Problem: Username or password is incorrect\"}"
 		if got != want {
 			t.Errorf("response body is wrong, got %q want %q", got, want)
 		}

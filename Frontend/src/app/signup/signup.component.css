@@ -32,7 +32,15 @@
 .phone-prompt{
   width:100%;
 }
+.pwmismatcherror{
+  color: #f44336; 
+  font-size: 12px; 
 
+}
+.password-confirm-prompt.passwords-not-matching input{
+  background-color: #ffe5e5;
+  border-color: #f44336;
+}
 
 
 

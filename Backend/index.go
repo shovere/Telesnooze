@@ -446,13 +446,46 @@ func (a *App) authenticationEndpoint(writer http.ResponseWriter, request *http.R
 	var id string
 	err := a.DB.QueryRow("SELECT id FROM users WHERE username = $3 AND password = $4", account.Username, hashedPassword).Scan(&id)
 	if err != nil {
+		respondWithError(writer, http.StatusBadRequest, "Problem: Username or password is incorrect")
 		fmt.Println(err)
-		writer.Write([]byte("Problem: Username or password is incorrect"))
 	} else {
 		writer.Write([]byte("Successful find"))
 	}
 	defer request.Body.Close()
 }
+
+func (a *App) forgotPassword(writer http.ResponseWriter, request *http.Request) {
+	var user account
+	err := json.NewDecoder(request.Body).Decode(&user)
+	if err != nil {
+		respondWithError(writer, http.StatusBadRequest, "Invalid request payload")
+		return
+	}
+	if user.Username == "" || user.Phone == "" || user.Password == "" {
+		respondWithError(writer, http.StatusBadRequest, "Missing required field(s)")
+		return
+	}
+	for _, char := range user.Password {
+		if char > 127 {
+			respondWithError(writer, http.StatusNotFound, "Problem: Password must only contain ASCII characters")
+			return
+		}
+	}
+	var retrievedAccount account
+	err = a.DB.QueryRow("SELECT email, password, phone FROM users WHERE username = ? AND phone = ?", user.Username, user.Phone).Scan(&retrievedAccount.Email, &retrievedAccount.Password, &retrievedAccount.Phone)
+	if err != nil {
+		respondWithError(writer, http.StatusNotFound, "Account not found")
+		return
+	}
+	hashedPassword := hashPassword(user.Password)
+	_, err = a.DB.Exec("UPDATE users SET password = ? WHERE username = ? AND phone = ?", hashedPassword, user.Username, user.Phone)
+	if err != nil {
+		log.Fatal(err)
+	}
+	writer.Write([]byte("Password successfully updated"))
+}
+
+
 
 
 func main() {
@@ -466,6 +499,7 @@ func main() {
 	app.router.HandleFunc("/api/v1/deleteAlarm", app.deleteAlarm).Methods("POST")
 	app.router.HandleFunc("/api/v1/createUser", app.createUser).Methods("POST")
 	app.router.HandleFunc("/api/v1/login", app.authenticationEndpoint).Methods("POST")
+	app.router.HandleFunc("/api/v1/forgotPassword", app.forgotPassword).Methods("POST")
 	c := cors.New(cors.Options{
 		AllowedOrigins:   []string{"*"},
 		AllowCredentials: true,
