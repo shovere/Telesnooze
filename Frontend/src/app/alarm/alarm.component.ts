@@ -2,12 +2,9 @@ import { Component, OnInit } from '@angular/core';
 import { Form, FormBuilder } from '@angular/forms';
 import { FormGroup, FormControl } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
-
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-
-//import { Alarm } from '../alarm';
-//import { AlarmService } from '../alarm.service';
+import { MatCheckboxModule } from '@angular/material/checkbox';
 
 @Component({
   selector: 'app-alarm',
@@ -78,47 +75,4 @@ export class AlarmComponent {
         console.log(err);
       });
   }
-
-  /*
-  add(time: string): void {
-    time= time.trim();
-    if (!time) { return; }
-    this.alarmService.addAlarm({ time } as Alarm)
-      .subscribe(alarm => {
-        this.alarms.push(alarm);
-      });
-  }
-
-
-
-
-
-  /*
-    alarms: Alarm[] = [];
-
-
-
-
-    ngOnInit(): void {
-      this.getAlarms();
-    }
-
-    getAlarms(): void {
-      this.alarmService.getAlarm()
-        .subscribe(alarms => this.alarms = alarms);
-    }
-
-    add(time: string): void {
-      time = time.trim();
-      if (!time) {
-        return;
-      }
-      this.alarmService.addAlarm({time} as Alarm)
-        .subscribe(time => {
-          this.alarms.push(time);
-        });
-    }
-  }
-
-   */
 }

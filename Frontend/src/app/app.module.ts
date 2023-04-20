@@ -29,7 +29,7 @@ import { MatCheckboxModule } from '@angular/material/checkbox'
 import {MatDatepickerModule} from '@angular/material/datepicker';
 import { MatDialogModule } from '@angular/material/dialog';
 import { TableFilteringExample } from './useralarms/useralarms.component';
-
+import {CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 
 @NgModule({
   declarations: [
@@ -69,6 +69,9 @@ import { TableFilteringExample } from './useralarms/useralarms.component';
     MatDialogModule,
   ],
   providers: [],
+  schemas: [
+    CUSTOM_ELEMENTS_SCHEMA
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

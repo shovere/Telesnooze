@@ -15,7 +15,7 @@
       <th mat-header-cell *matHeaderCellDef> Sunday </th>
       <td mat-cell *matCellDef="let element">
         <span *ngIf="!isRowBeingEdited">{{ element.days.sunday }}</span>
-       
+        <input *ngIf="isRowBeingEdited" type="text" [(ngModel)]="element.days.sunday">
       </td>
     </ng-container>
 
@@ -23,7 +23,7 @@
       <th mat-header-cell *matHeaderCellDef> Monday </th>
       <td mat-cell *matCellDef="let element">
         <span *ngIf="!isRowBeingEdited">{{ element.days.monday }}</span>
-       
+        <input *ngIf="isRowBeingEdited" type="text" [(ngModel)]="element.days.monday">
       </td>
     </ng-container>
 
@@ -31,7 +31,7 @@
       <th mat-header-cell *matHeaderCellDef> Tuesday </th>
       <td mat-cell *matCellDef="let element">
         <span *ngIf="!isRowBeingEdited">{{ element.days.tuesday}}</span>
-      
+        <input *ngIf="isRowBeingEdited" type="text" [(ngModel)]="element.alarms.tuesday">
       </td>
     </ng-container>
 
@@ -39,7 +39,7 @@
       <th mat-header-cell *matHeaderCellDef> Wednesday </th>
       <td mat-cell *matCellDef="let element">
         <span *ngIf="!isRowBeingEdited">{{ element.days.wednesday}}</span>
-     
+        <input *ngIf="isRowBeingEdited" type="text" [(ngModel)]="element.days.wednesday">
       </td>
     </ng-container>
 
@@ -47,7 +47,7 @@
       <th mat-header-cell *matHeaderCellDef> Thursday </th>
       <td mat-cell *matCellDef="let element">
         <span *ngIf="!isRowBeingEdited">{{ element.days.thursday}}</span>
-       
+        <input *ngIf="isRowBeingEdited" type="text" [(ngModel)]="element.days.thursday">
       </td>
     </ng-container>
 
@@ -55,7 +55,7 @@
       <th mat-header-cell *matHeaderCellDef> Friday </th>
       <td mat-cell *matCellDef="let element">
         <span *ngIf="!isRowBeingEdited">{{ element.days.friday}}</span>
-       
+        <input *ngIf="isRowBeingEdited" type="text" [(ngModel)]="element.days.friday">
       </td>
     </ng-container>
 
@@ -63,16 +63,16 @@
       <th mat-header-cell *matHeaderCellDef> Saturday </th>
       <td mat-cell *matCellDef="let element">
         <span *ngIf="!isRowBeingEdited">{{ element.days.saturday}}</span>
-   
+        <input *ngIf="isRowBeingEdited" type="text" [(ngModel)]="element.days.saturday">
       </td>
     </ng-container>
 
     <!-- Weight Column -->
     <ng-container matColumnDef="time">
-      <th mat-header-cell *matHeaderCellDef> Time</th>
+      <th mat-header-cell *matHeaderCellDef> ime</th>
       <td mat-cell *matCellDef="let element">
         <span *ngIf="!isRowBeingEdited">{{ element.time}}</span>
-
+        <input *ngIf="isRowBeingEdited" type="text" [(ngModel)]="element.time">
       </td>
     </ng-container>
 

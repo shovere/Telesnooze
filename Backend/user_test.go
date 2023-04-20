@@ -254,15 +254,15 @@ func TestCreateAlarm(t *testing.T){
 	t.Run("Optimal Test Alarm", func(t *testing.T) {
 		jsonBody := []byte(`{
 							"user_id": "83f18bdf-2e8f-4cd0-bfba-8dd0ec79aa97",
-							"time": "2023-02-27T17:43:35.668Z",
+							"time": "2023-02-27T14:26:35.668Z",
 							 "days": {
 								"sunday": false, 
-								"monday": false, 
+								"monday": true, 
 								"tuesday": true, 
-								"wednesday": false, 
-								"thursday": false, 
-								"friday": false, 
-								"saturday": false
+								"wednesday": true, 
+								"thursday": true, 
+								"friday": true, 
+								"saturday": true
 							 }}`)
  		bodyReader := bytes.NewReader(jsonBody)
 		app := &App{}
@@ -307,7 +307,7 @@ func TestRetreiveAlarms(t *testing.T){
  		bodyReader := bytes.NewReader(jsonBody)
 		app := &App{}
 		app.initializeApp()
-		request, _ := http.NewRequest(http.MethodPost, "/api/v1/retrieveAlarm", bodyReader)
+		request, _ := http.NewRequest(http.MethodPost, "/api/v1/retrieveAlarms", bodyReader)
 		response := httptest.NewRecorder()
 	
 		app.retrieveAlarms(response, request)
@@ -336,7 +336,7 @@ func TestRetreiveAlarms(t *testing.T){
  		bodyReader := bytes.NewReader(jsonBody)
 		app := &App{}
 		app.initializeApp()
-		request, _ := http.NewRequest(http.MethodPost, "/api/v1/retrieveAlarm", bodyReader)
+		request, _ := http.NewRequest(http.MethodPost, "/api/v1/retrieveAlarms", bodyReader)
 		response := httptest.NewRecorder()
 	
 		app.retrieveAlarms(response, request)
@@ -378,7 +378,7 @@ func TestUpdateAlarm(t *testing.T){
 	t.Run("Bad Time", func(t *testing.T) {
 		jsonBody := []byte(`{
 			"user_id": "83f18bdf-2e8f-4cd0-bfba-8dd0ec79aa97",
-			"alarm_id": "0664c23d-673c-47c4-85d6-97e77203f877",
+			"alarm_id": "1f82b94c-3d6e-4cef-8814-74ed20df8fd2",
 			"time": "202-27T17:43:35.668Z",
 							 "days": {
 								"sunday": false, 
@@ -404,8 +404,8 @@ func TestUpdateAlarm(t *testing.T){
 	t.Run("Bad Weekdays",func(t *testing.T) {
 		jsonBody := []byte(`{
 			"user_id": "83f18bdf-2e8f-4cd0-bfba-8dd0ec79aa97",
-			"alarm_id": "0664c23d-673c-47c4-85d6-97e77203f877",
-			"time": "2023-02-27T17:43:35.668Z",
+			"alarm_id":  "1f82b94c-3d6e-4cef-8814-74ed20df8fd2",
+			"time": "2023-02-27T17:15:35.668Z",
 							 "days": {
 								"sunday": false, 
 								"monday": false, 
@@ -430,8 +430,8 @@ func TestUpdateAlarm(t *testing.T){
 	t.Run("Optimal Test Alarm", func(t *testing.T) {
 		jsonBody := []byte(`{
 							"user_id": "83f18bdf-2e8f-4cd0-bfba-8dd0ec79aa97",
-							"alarm_id": "0664c23d-673c-47c4-85d6-97e77203f877",
-							"time": "2023-02-27T17:43:35.668Z",
+							"alarm_id": "1f82b94c-3d6e-4cef-8814-74ed20df8fd2",
+							"time":"2023-02-27T17:18:35.668Z",
 							 "days": {
 								"sunday": true, 
 								"monday": true, 
